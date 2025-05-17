@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepfake Detection | Smart AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Feature</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="hero-section">
+        <h1>DeepFake Detection</h1>
+        <p>Real-Time Video Authentication</p>
+    </div>
+
+    <section id="video-upload">
+        <h2>Analyze Your Video</h2>
+        <div class="upload-container">
+            <div class="loader-container" id="loaderContainer">
+                <div class="loader"></div>
+                <p>Uploading...</p>
+            </div>
+            <form id="videoForm" onsubmit="handleVideoSubmit(event)">
+                <label for="videoFile">Select a video file (Max 100MB)</label>
+                <input type="file" id="videoFile" accept="video/*" required onchange="previewVideo()">
+                <p id="error-message" style="display: none;">⚠️ File size exceeds limit!</p>
+                <button type="submit" id="analyzeBtn">Analyze Now →</button>
+            </form>
+
+            <div class="video-preview" id="videoPreviewContainer">
+                <video id="videoPreview" controls></video>
+            </div>
+
+            <div id="processingOverlay" class="processing-overlay">Analyzing Video...</div>
+        </div>
+        <div id="result-container" class="result-container">
+            <div id="analysis-result"></div>
+            <div id="justification" class="justification-text"></div>
+            <button id="analyzeAnotherBtn" style="display: none;" onclick="resetForm()">Analyze Another Video</button>
+        </div>
+    </section>
+
+    <section id="features">
+        <h2>Core Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Frame-wise Analysis</h3>
+                <p>Advanced landmark detection for precise frame-by-frame analysis</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>Classification</h3>
+                <p>State-of-the-art machine learning algorithms for accurate detection</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Confidence Scoring</h3>
+                <p>Real-time confidence scores with detailed analysis</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Fast Processing</h3>
+                <p>Quick analysis with minimal waiting time</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works">
+        <h2>How It Works</h2>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Upload Video</h3>
+                <p>Select and upload your video file (max 100MB)</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>AI Analysis</h3>
+                <p>Our AI processes each frame for deepfake detection</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Get Results</h3>
+                <p>Receive detailed analysis with confidence scores</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <h2>About Our Technology</h2>
+        <div class="about-content">
+            <p>Our deepfake detection system uses advanced computer vision and machine learning techniques to analyze videos for potential manipulation. The system examines facial landmarks, temporal consistency, and other visual artifacts to determine authenticity.</p>
+            <div class="tech-stack">
+                <h3>Technology Stack</h3>
+                <ul>
+                    <li>SVM & Scikit-learn</li>
+                    <li>OpenCV</li>
+                    <li>Flask Backend</li>
+                    <li>Modern Web Technologies</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 DeepFake Detection. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
