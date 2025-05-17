@@ -32,36 +32,69 @@ function displayResult(result) {
 
 function resetForm() {
     document.getElementById('videoForm').reset();
+    document.getElementById('frameDisplay').innerHTML = '';
     document.getElementById('videoPreview').src = '';
     document.getElementById('videoPreviewContainer').style.display = 'none';
     document.getElementById('analysis-result').innerHTML = '';
     document.getElementById('justification').innerHTML = '';
     document.getElementById('analyzeAnotherBtn').style.display = 'none';
+
+    const errorMessage = document.getElementById('error-message');
+    if (errorMessage) {
+        errorMessage.style.display = 'none';
+        errorMessage.textContent = '';
+    }
+    // DO NOT call videoPreview.load() here!
 }
 
 function handleVideoSubmit(event) {
-    event.preventDefault();
-    const videoInput = document.getElementById('videoFile');
-    const errorMessage = document.getElementById('error-message');
-    const file = videoInput.files[0];
 
-    if (file && file.size > MAX_FILE_SIZE) {
-        errorMessage.style.display = 'block';
-        videoInput.value = '';
+    console.log("inside handlevideo submit")
+    event.preventDefault();
+    const fileInput = document.getElementById('videoFile');
+    const file = fileInput.files[0];
+
+    if (file.size > 100 * 1024 * 1024) {
+        document.getElementById('error-message').style.display = 'block';
         return;
     }
 
-    errorMessage.style.display = 'none';
+    document.getElementById('loaderContainer').style.display = 'block';
 
-    if (file) {
-        loaderContainer.style.display = 'flex';
-        processingOverlay.style.display = 'flex';
-        analyzeBtn.classList.add('is-loading');
-        analyzeBtn.disabled = true;
+    const formData = new FormData();
+    formData.append('video', file);
 
-        uploadVideo(file);
-    }
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('loaderContainer').style.display = 'none';
+        document.getElementById('analysis-result').innerText = `Prediction: ${data.prediction} (${data.confidence})`;
+        document.getElementById('justification').innerText = data.justification;
+        document.getElementById('analyzeAnotherBtn').style.display = 'block';
+
+        // Display frames
+        const frameContainer = document.getElementById('frameDisplay');
+        frameContainer.innerHTML = ''; // Clear previous frames
+        if (data.frames && data.frames.length > 0) {
+            data.frames.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url + '?t=' + new Date().getTime();
+                img.alt = 'Extracted Frame';
+                img.className = 'frame-image';
+                frameContainer.appendChild(img);
+            });
+        }
+        console.log("Frames received:", data.frames);
+    })
+    .catch(err => {
+        document.getElementById('loaderContainer').style.display = 'none';
+        alert("Error analyzing video: " + err);
+    });
 }
+
 
 function uploadVideo(file) {
     const formData = new FormData();
@@ -107,6 +140,9 @@ function uploadVideo(file) {
 }
 
 function previewVideo() {
+    document.getElementById('analysis-result').innerHTML = '';
+    document.getElementById('justification').innerHTML = '';
+    document.getElementById('frameDisplay').innerHTML = '';
     const videoFileInput = document.getElementById('videoFile');
     const videoPreview = document.getElementById('videoPreview');
     const videoPreviewContainer = document.getElementById('videoPreviewContainer');
@@ -146,3 +182,11 @@ function previewVideo() {
         videoPreviewContainer.style.display = 'none';
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // console.log("clickeddddddd")
+    const analyzeAnotherBtn = document.getElementById('analyzeAnotherBtn');
+    if (analyzeAnotherBtn) {
+        analyzeAnotherBtn.addEventListener('click', resetForm);
+    }
+});

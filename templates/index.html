@@ -25,7 +25,7 @@
         <h2>Analyze Your Video</h2>
         <div class="upload-container">
             <div class="loader-container" id="loaderContainer">
-                <div class="loader"></div>
+                <!-- <div class="loader"></div> -->
                 <p>Uploading...</p>
             </div>
             <form id="videoForm" onsubmit="handleVideoSubmit(event)">
@@ -35,16 +35,21 @@
                 <button type="submit" id="analyzeBtn">Analyze Now →</button>
             </form>
 
-            <div class="video-preview" id="videoPreviewContainer">
+            <div class="video-preview" id="videoPreviewContainer" style="position: relative;">
                 <video id="videoPreview" controls></video>
+                <div class="loader-container" id="loaderContainer">
+                    <!-- <div class="loader"></div> -->
+                    <p>Analyzing Video...</p>
+                </div>
             </div>
 
             <div id="processingOverlay" class="processing-overlay">Analyzing Video...</div>
         </div>
-        <div id="result-container" class="result-container">
+        <div id="resultContainer" class="result-container">
             <div id="analysis-result"></div>
             <div id="justification" class="justification-text"></div>
-            <button id="analyzeAnotherBtn" style="display: none;" onclick="resetForm()">Analyze Another Video</button>
+            <div id="frameDisplay" class="frame-display-container"></div>
+            <button id="analyzeAnotherBtn" style="display: none;">Analyze Another Video</button>
         </div>
     </section>
 
