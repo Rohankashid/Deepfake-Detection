@@ -76,8 +76,9 @@ function handleVideoSubmit(event) {
         document.getElementById('analyzeAnotherBtn').style.display = 'block';
 
         // Display frames
+        const frameSection = document.getElementById('frameSection');
         const frameContainer = document.getElementById('frameDisplay');
-        frameContainer.innerHTML = ''; // Clear previous frames
+        frameContainer.innerHTML = '';
         if (data.frames && data.frames.length > 0) {
             data.frames.forEach(url => {
                 const img = document.createElement('img');
@@ -86,6 +87,9 @@ function handleVideoSubmit(event) {
                 img.className = 'frame-image';
                 frameContainer.appendChild(img);
             });
+            frameSection.style.display = 'block';
+        } else {
+            frameSection.style.display = 'none';
         }
         console.log("Frames received:", data.frames);
     })
@@ -182,6 +186,61 @@ function previewVideo() {
         videoPreviewContainer.style.display = 'none';
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    // Load theme from localStorage
+    if (localStorage.getItem('theme') === 'light') {
+        body.classList.add('light-theme');
+        themeToggle.textContent = '☀️';
+    }
+
+    themeToggle.addEventListener('click', function() {
+        body.classList.toggle('light-theme');
+        if (body.classList.contains('light-theme')) {
+            themeToggle.textContent = '☀️';
+            localStorage.setItem('theme', 'light');
+        } else {
+            themeToggle.textContent = '🌙';
+            localStorage.setItem('theme', 'dark');
+        }
+    });
+
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('videoFile');
+
+    // Highlight drop area on drag over
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropArea.classList.add('dragover');
+        }, false);
+    });
+
+    // Remove highlight on drag leave/drop
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropArea.classList.remove('dragover');
+        }, false);
+    });
+
+    // Handle dropped files
+    dropArea.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            previewVideo(); // Optionally preview the video
+        }
+    });
+
+    // Optional: clicking the drop area opens file dialog
+    dropArea.addEventListener('click', () => fileInput.click());
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     // console.log("clickeddddddd")

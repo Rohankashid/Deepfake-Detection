@@ -48,7 +48,10 @@
         <div id="resultContainer" class="result-container">
             <div id="analysis-result"></div>
             <div id="justification" class="justification-text"></div>
-            <div id="frameDisplay" class="frame-display-container"></div>
+            <div id="frameSection" class="frame-section" style="display:none;">
+                <h4>Extracted Frames</h4>
+                <div id="frameDisplay" class="frame-display-container"></div>
+            </div>
             <button id="analyzeAnotherBtn" style="display: none;">Analyze Another Video</button>
         </div>
     </section>
@@ -126,6 +129,8 @@
             </div>
         </div>
     </footer>
+
+    <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">🌙</button>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
