@@ -182,8 +182,10 @@ button:hover {
     padding: 10px 24px;
     font-size: 1rem;
     cursor: pointer;
-    margin-top: 16px;
+    margin: 16px auto 0 auto; /* Center horizontally and add top margin */
+    display: block;           /* Make it a block element for margin auto to work */
     transition: background 0.2s;
+    text-align: center;
 }
 #analyzeAnotherBtn:hover {
     background: #0056b3;
@@ -409,6 +411,28 @@ footer {
 .drop-area.dragover {
     border-color: #007bff;
     background: #e6f0ff;
+}
+
+.download-report-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.download-report-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 10px;
+}
+.download-report-btn:hover {
+    background: #0056b3;
 }
 
 @media (max-width: 768px) {

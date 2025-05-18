@@ -38,6 +38,8 @@ function resetForm() {
     document.getElementById('analysis-result').innerHTML = '';
     document.getElementById('justification').innerHTML = '';
     document.getElementById('analyzeAnotherBtn').style.display = 'none';
+    document.getElementById('downloadReportSection').style.display = 'none';
+    document.getElementById('frameSection').style.display = 'none';
 
     const errorMessage = document.getElementById('error-message');
     if (errorMessage) {
@@ -92,6 +94,18 @@ function handleVideoSubmit(event) {
             frameSection.style.display = 'none';
         }
         console.log("Frames received:", data.frames);
+        console.log("Frames analyzed:", data.frames_analyzed);
+        console.log("Frame-wise probabilities:", data.frame_probs);
+        console.log("Raw output vector:", data.raw_output);
+        console.log("Landmark variance:", data.landmark_variance);
+        console.log("Processing time (s):", data.processing_time);
+        console.log("Model version:", data.model_version);
+
+        // Show the download report section
+        document.getElementById('downloadReportSection').style.display = 'flex';
+
+        // Store the latest analysis data for the report
+        window.latestAnalysisData = data;
     })
     .catch(err => {
         document.getElementById('loaderContainer').style.display = 'none';
@@ -125,10 +139,12 @@ function uploadVideo(file) {
             `;
             resultContainer.style.display = 'block';
             analyzeAnotherBtn.style.display = 'block';
+            document.getElementById('downloadReportSection').style.display = 'flex';
         } else {
             analysisResult.innerHTML = `<p style="color: red;">Error: ${data.message}</p>`;
             resultContainer.style.display = 'block';
             analyzeAnotherBtn.style.display = 'block';
+            document.getElementById('downloadReportSection').style.display = 'none';
         }
     })
     .catch(error => {
@@ -147,6 +163,8 @@ function previewVideo() {
     document.getElementById('analysis-result').innerHTML = '';
     document.getElementById('justification').innerHTML = '';
     document.getElementById('frameDisplay').innerHTML = '';
+    document.getElementById('downloadReportSection').style.display = 'none';
+    document.getElementById('frameSection').style.display = 'none';
     const videoFileInput = document.getElementById('videoFile');
     const videoPreview = document.getElementById('videoPreview');
     const videoPreviewContainer = document.getElementById('videoPreviewContainer');
@@ -247,5 +265,104 @@ document.addEventListener('DOMContentLoaded', function() {
     const analyzeAnotherBtn = document.getElementById('analyzeAnotherBtn');
     if (analyzeAnotherBtn) {
         analyzeAnotherBtn.addEventListener('click', resetForm);
+    }
+
+    const downloadSection = document.getElementById('downloadReportSection');
+    const downloadBtn = document.getElementById('downloadReportBtn');
+
+    // Show the download button after analysis
+    function showDownloadReport() {
+        if (downloadSection) downloadSection.style.display = 'flex';
+    }
+
+    // Example: Call showDownloadReport() after analysis is done
+    // In your handleVideoSubmit .then(data => { ... })
+    // After showing justification/result:
+    // showDownloadReport();
+
+    // Download report logic
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+            const data = window.latestAnalysisData;
+            if (!data) return;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Title
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('DeepFake Detection Detailed Report', 105, 18, { align: 'center' });
+
+            // Main Results
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            let y = 30;
+            doc.text(`Prediction: `, 10, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`${data.prediction}`, 45, y);
+            doc.setFont('helvetica', 'normal');
+            y += 8;
+            doc.text(`Confidence: `, 10, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`${data.confidence}`, 45, y);
+            doc.setFont('helvetica', 'normal');
+            y += 8;
+            doc.text('Justification:', 10, y);
+            y += 7;
+            doc.setFontSize(11);
+            doc.text(doc.splitTextToSize(data.justification, 180), 14, y);
+            y += doc.getTextDimensions(doc.splitTextToSize(data.justification, 180)).h + 4;
+
+            // Analysis Details
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Analysis Details:', 10, y);
+            doc.setFont('helvetica', 'normal');
+            y += 8;
+            doc.text(`Frames analyzed: ${data.frames_analyzed}`, 14, y);
+            y += 8;
+            doc.text(`Landmark variance: ${data.landmark_variance}`, 14, y);
+            y += 8;
+            doc.text(`Processing time (s): ${data.processing_time}`, 14, y);
+            y += 8;
+            doc.text(`Model version: ${data.model_version}`, 14, y);
+            y += 10;
+
+            // Raw Output Vector
+            doc.setFont('helvetica', 'bold');
+            doc.text('Raw output vector:', 10, y);
+            doc.setFont('helvetica', 'normal');
+            doc.text(JSON.stringify(data.raw_output), 60, y);
+            y += 10;
+
+            // Frame-wise Probabilities Table
+            if (data.frame_probs && data.frame_probs.length) {
+                doc.setFont('helvetica', 'bold');
+                doc.text('Frame-wise Probabilities:', 10, y);
+                y += 7;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(11);
+                doc.text('Frame', 14, y);
+                doc.text('Real (%)', 40, y);
+                doc.text('Fake (%)', 70, y);
+                y += 5;
+                doc.setLineWidth(0.1);
+                doc.line(14, y, 100, y);
+                y += 4;
+                data.frame_probs.forEach((prob, idx) => {
+                    if (y > 270) { // Add new page if needed
+                        doc.addPage();
+                        y = 20;
+                    }
+                    doc.text(`${idx + 1}`, 14, y);
+                    doc.text(`${(prob[0]*100).toFixed(2)}`, 40, y);
+                    doc.text(`${(prob[1]*100).toFixed(2)}`, 70, y);
+                    y += 6;
+                });
+            }
+
+            doc.save('deepfake_detailed_report.pdf');
+        });
     }
 });

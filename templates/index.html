@@ -48,11 +48,14 @@
         <div id="resultContainer" class="result-container">
             <div id="analysis-result"></div>
             <div id="justification" class="justification-text"></div>
+            <button id="analyzeAnotherBtn" style="display: none;">Analyze Another Video</button>
+            <div id="downloadReportSection" class="download-report-section" style="display: none;">
+                <button id="downloadReportBtn" class="download-report-btn">⬇️ Download Detailed Report</button>
+            </div>
             <div id="frameSection" class="frame-section" style="display:none;">
                 <h4>Extracted Frames</h4>
                 <div id="frameDisplay" class="frame-display-container"></div>
             </div>
-            <button id="analyzeAnotherBtn" style="display: none;">Analyze Another Video</button>
         </div>
     </section>
 
@@ -133,5 +136,6 @@
     <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">🌙</button>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>

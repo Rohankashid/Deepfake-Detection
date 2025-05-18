@@ -6,6 +6,7 @@ import cv2
 import dlib
 from flask_cors import CORS
 import shutil
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -29,6 +30,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def predict_video(video_path, frame_skip=30, max_frames=50):
+    start_time = time.time()
     frame_save_dir = os.path.join("static", "frames")
     # Clear the frames directory before saving new frames
     if os.path.exists(frame_save_dir):
@@ -55,6 +57,10 @@ def predict_video(video_path, frame_skip=30, max_frames=50):
     frame_count = 0
     processed_frames = 0
     saved_frames_paths = []
+    frame_probs = []
+    raw_output = []
+    landmark_variance = []
+    processing_time = 0
 
     while cap.isOpened() and processed_frames < max_frames:
         ret, frame = cap.read()
@@ -77,21 +83,53 @@ def predict_video(video_path, frame_skip=30, max_frames=50):
     cap.release()
 
     if len(features) == 0:
-        return "Undetermined", 0.0, "No valid frames with faces detected in the video.", []
+        return "Undetermined", 0.0, "No valid frames with faces detected in the video.", [], 0, [], [], [], 0, ""
+
+    frame_probs = []
+    for f in features:
+        p = model.predict_proba(f.reshape(1, -1))[0]
+        frame_probs.append(p.tolist())  # [prob_real, prob_fake] for each frame
 
     avg_features = np.mean(features, axis=0).reshape(1, -1)
     probs = model.predict_proba(avg_features)
     confidence = abs(max(probs[0]) * 100)
     prediction = model.predict(avg_features)[0]
+    processing_time = time.time() - start_time
+
+    # Consistency/variance of landmarks
+    landmark_variance = float(np.var(features)) if len(features) > 1 else 0.0
+
+    # Model version (filename or timestamp)
+    model_version = model_path
+
+    # Raw output vector
+    raw_output = probs[0].tolist()
 
     print(f"Prediction: {prediction}, Confidence: {confidence:.2f}%")
+    print(f"Frames analyzed: {processed_frames}")
+    print(f"Frame-wise probabilities: {frame_probs}")
+    print(f"Probability vector: {raw_output}")
+    print(f"Landmark variance: {landmark_variance}")
+    print(f"Processing time: {processing_time:.2f} seconds")
+    print(f"Model version: {model_version}")
 
     if prediction == 0:
         justification = f"The video appears to be authentic based on facial landmark analysis. The system analyzed {processed_frames} frames and found consistent facial features with {confidence:.2f}% confidence."
     else:
         justification = f"The video shows signs of manipulation based on facial landmark analysis. The system analyzed {processed_frames} frames and detected inconsistencies in facial features with {confidence:.2f}% confidence."
     
-    return ("Real", confidence, justification, saved_frames_paths) if prediction == 0 else ("Fake", confidence, justification, saved_frames_paths)
+    return (
+        "Real" if prediction == 0 else "Fake",
+        confidence,
+        justification,
+        saved_frames_paths,
+        processed_frames,
+        frame_probs,
+        raw_output,
+        landmark_variance,
+        processing_time,
+        model_version
+    )
 
 # Route for serving index.html
 @app.route('/')
@@ -112,14 +150,19 @@ def upload_video():
         file.save(filepath)
 
         try:
-            # Run deepfake detection
-            result, confidence, justification , frames = predict_video(filepath)  
+            result, confidence, justification, frames, processed_frames, frame_probs, raw_output, landmark_variance, processing_time, model_version = predict_video(filepath)
             return jsonify({
-                'status': 'success', 
-                'prediction': result, 
+                'status': 'success',
+                'prediction': result,
                 'confidence': f"{confidence:.2f}%",
                 'justification': justification,
-                'frames': frames
+                'frames': frames,
+                'frames_analyzed': processed_frames,
+                'frame_probs': frame_probs,
+                'raw_output': raw_output,
+                'landmark_variance': landmark_variance,
+                'processing_time': processing_time,
+                'model_version': model_version
             })
         except Exception as e:
             return jsonify({'status': 'error', 'message': str(e)}), 500
