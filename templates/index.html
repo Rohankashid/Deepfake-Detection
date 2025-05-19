@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deepfake Detection | Smart AI</title>
+    <meta name="description" content="Advanced DeepFake Detection using AI - Analyze videos in real-time with machine learning for authenticity verification">
+    <meta name="keywords" content="deepfake detection, AI video analysis, facial recognition, video authentication, machine learning">
+    <meta name="author" content="DeepFake Detection">
+    <meta property="og:title" content="DeepFake Detection | Smart AI">
+    <meta property="og:description" content="Verify video authenticity using advanced AI technology">
+    <meta property="og:type" content="website">
+    <title>Deepfake Detection | Smart AI Video Analysis</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -56,6 +65,16 @@
                 <h4>Extracted Frames</h4>
                 <div id="frameDisplay" class="frame-display-container"></div>
             </div>
+        </div>
+
+        <!-- Progress Bar Loader -->
+        <div id="progressBarContainer" style="display:none; width:100%; margin-bottom:1rem;">
+            <div id="progressBar" style="height:8px; width:0; background:linear-gradient(90deg,#00f3ff,#6c63ff); border-radius:4px; transition:width 0.3s;"></div>
+        </div>
+
+        <!-- Animated Spinner Loader -->
+        <div id="spinnerLoader" style="display:none; justify-content:center; align-items:center; margin-bottom:1rem;">
+            <div class="loader"></div>
         </div>
     </section>
 

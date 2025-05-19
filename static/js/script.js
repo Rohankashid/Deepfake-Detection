@@ -66,51 +66,76 @@ function handleVideoSubmit(event) {
     const formData = new FormData();
     formData.append('video', file);
 
-    fetch('/upload', {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById('loaderContainer').style.display = 'none';
-        document.getElementById('analysis-result').innerText = `Prediction: ${data.prediction} (${data.confidence})`;
-        document.getElementById('justification').innerText = data.justification;
-        document.getElementById('analyzeAnotherBtn').style.display = 'block';
+    // Show spinner loader
+    document.getElementById('spinnerLoader').style.display = 'flex';
+    // Optionally, show progress bar for upload
+    document.getElementById('progressBarContainer').style.display = 'block';
+    document.getElementById('progressBar').style.width = '0';
 
-        // Display frames
-        const frameSection = document.getElementById('frameSection');
-        const frameContainer = document.getElementById('frameDisplay');
-        frameContainer.innerHTML = '';
-        if (data.frames && data.frames.length > 0) {
-            data.frames.forEach(url => {
-                const img = document.createElement('img');
-                img.src = url + '?t=' + new Date().getTime();
-                img.alt = 'Extracted Frame';
-                img.className = 'frame-image';
-                frameContainer.appendChild(img);
-            });
-            frameSection.style.display = 'block';
-        } else {
-            frameSection.style.display = 'none';
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/upload', true);
+
+    // Update progress bar during upload
+    xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+            const percent = (e.loaded / e.total) * 100;
+            document.getElementById('progressBar').style.width = percent + '%';
         }
-        console.log("Frames received:", data.frames);
-        console.log("Frames analyzed:", data.frames_analyzed);
-        console.log("Frame-wise probabilities:", data.frame_probs);
-        console.log("Raw output vector:", data.raw_output);
-        console.log("Landmark variance:", data.landmark_variance);
-        console.log("Processing time (s):", data.processing_time);
-        console.log("Model version:", data.model_version);
+    };
 
-        // Show the download report section
-        document.getElementById('downloadReportSection').style.display = 'flex';
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
+            document.getElementById('loaderContainer').style.display = 'none';
+            document.getElementById('analysis-result').innerText = `Prediction: ${data.prediction} (${data.confidence})`;
+            document.getElementById('justification').innerText = data.justification;
+            document.getElementById('analyzeAnotherBtn').style.display = 'block';
+            document.getElementById('spinnerLoader').style.display = 'none';
+            document.getElementById('progressBarContainer').style.display = 'none';
 
-        // Store the latest analysis data for the report
-        window.latestAnalysisData = data;
-    })
-    .catch(err => {
+
+
+            // Display frames
+            const frameSection = document.getElementById('frameSection');
+            const frameContainer = document.getElementById('frameDisplay');
+            frameContainer.innerHTML = '';
+            if (data.frames && data.frames.length > 0) {
+                data.frames.forEach(url => {
+                    const img = document.createElement('img');
+                    img.src = url + '?t=' + new Date().getTime();
+                    img.alt = 'Extracted Frame';
+                    img.className = 'frame-image';
+                    frameContainer.appendChild(img);
+                });
+                frameSection.style.display = 'block';
+            } else {
+                frameSection.style.display = 'none';
+            }
+            console.log("Frames received:", data.frames);
+            console.log("Frames analyzed:", data.frames_analyzed);
+            console.log("Frame-wise probabilities:", data.frame_probs);
+            console.log("Raw output vector:", data.raw_output);
+            console.log("Landmark variance:", data.landmark_variance);
+            console.log("Processing time (s):", data.processing_time);
+            console.log("Model version:", data.model_version);
+
+            // Show the download report section
+            document.getElementById('downloadReportSection').style.display = 'flex';
+
+            // Store the latest analysis data for the report
+            window.latestAnalysisData = data;
+        } else {
+            document.getElementById('loaderContainer').style.display = 'none';
+            alert("Error analyzing video: " + xhr.statusText);
+        }
+    };
+
+    xhr.onerror = function() {
         document.getElementById('loaderContainer').style.display = 'none';
-        alert("Error analyzing video: " + err);
-    });
+        alert("Error analyzing video: " + xhr.statusText);
+    };
+
+    xhr.send(formData);
 }
 
 
@@ -174,13 +199,13 @@ function previewVideo() {
     if (file) {
         if (file.size > MAX_FILE_SIZE) {
             errorMessage.style.display = 'block';
-            videoFileInput.value = '';
-            videoPreview.src = '';
+            errorMessage.textContent = '⚠️ File size exceeds limit!';
+            // Optionally, hide the video preview
             videoPreviewContainer.style.display = 'none';
             return;
+        } else {
+            errorMessage.style.display = 'none';
         }
-
-        errorMessage.style.display = 'none';
 
         const videoURL = URL.createObjectURL(file);
         videoPreview.src = videoURL;
