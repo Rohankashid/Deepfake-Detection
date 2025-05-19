@@ -124,6 +124,24 @@ function handleVideoSubmit(event) {
 
             // Store the latest analysis data for the report
             window.latestAnalysisData = data;
+
+            // Show confidence gauge
+            const gaugeContainer = document.getElementById('confidenceGaugeContainer');
+            const arc = document.getElementById('confidenceArc');
+            const text = document.getElementById('confidenceText');
+            if (data.confidence) {
+                let conf = parseFloat(data.confidence); // e.g. "80.59%"
+                if (isNaN(conf)) conf = parseFloat(data.confidence.replace('%',''));
+                animateConfidenceGauge(Math.max(0, Math.min(100, conf)));
+                const percent = Math.max(0, Math.min(100, conf));
+                const circleLen = 2 * Math.PI * 52;
+                arc.setAttribute('stroke-dasharray', circleLen);
+                arc.setAttribute('stroke-dashoffset', circleLen - (circleLen * percent / 100));
+                text.textContent = percent.toFixed(1) + '%';
+                gaugeContainer.style.display = 'block';
+            } else {
+                gaugeContainer.style.display = 'none';
+            }
         } else {
             document.getElementById('loaderContainer').style.display = 'none';
             alert("Error analyzing video: " + xhr.statusText);
@@ -391,3 +409,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function animateConfidenceGauge(targetPercent) {
+    const arc = document.getElementById('confidenceArc');
+    const text = document.getElementById('confidenceText');
+    const gaugeContainer = document.getElementById('confidenceGaugeContainer');
+    const circleLen = 2 * Math.PI * 52;
+    let current = 0;
+    gaugeContainer.style.display = 'flex';
+
+    function animate() {
+        if (current < targetPercent) {
+            current += 1;
+            if (current > targetPercent) current = targetPercent;
+            arc.setAttribute('stroke-dasharray', circleLen);
+            arc.setAttribute('stroke-dashoffset', circleLen - (circleLen * current / 100));
+            text.textContent = current.toFixed(0) + '%';
+            requestAnimationFrame(animate);
+        } else {
+            arc.setAttribute('stroke-dasharray', circleLen);
+            arc.setAttribute('stroke-dashoffset', circleLen - (circleLen * targetPercent / 100));
+            text.textContent = targetPercent.toFixed(1) + '%';
+        }
+    }
+    animate();
+}

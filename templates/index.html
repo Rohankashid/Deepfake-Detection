@@ -54,9 +54,25 @@
 
             <div id="processingOverlay" class="processing-overlay">Analyzing Video...</div>
         </div>
-        <div id="resultContainer" class="result-container">
-            <div id="analysis-result"></div>
-            <div id="justification" class="justification-text"></div>
+        <div id="resultContainer" class="result-container" >
+            <div class="result-summary horizontal-result-summary">
+                <div class="result-left">
+                    <div id="analysis-result"></div>
+                    <div id="justification" class="justification-text"></div>
+                </div>
+                <div class="result-right">
+                    <div id="confidenceGaugeContainer">
+                        <svg id="confidenceGauge" width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="52" stroke="#e5e7eb" stroke-width="12" fill="none"/>
+                            <circle id="confidenceArc" cx="60" cy="60" r="52" stroke="#00f3ff" stroke-width="12" fill="none"
+                                stroke-linecap="round" stroke-dasharray="326.7256" stroke-dashoffset="326.7256"
+                                transform="rotate(-90 60 60)"/>
+                            <text id="confidenceText" x="60" y="68" text-anchor="middle" font-size="18px" fill="#00f3ff" font-weight="bold">0%</text>
+                        </svg>
+                        <div class="confidence-label">Confidence</div>
+                    </div>
+                </div>
+            </div>
             <button id="analyzeAnotherBtn" style="display: none;">Analyze Another Video</button>
             <div id="downloadReportSection" class="download-report-section" style="display: none;">
                 <button id="downloadReportBtn" class="download-report-btn">⬇️ Download Detailed Report</button>
@@ -75,6 +91,17 @@
         <!-- Animated Spinner Loader -->
         <div id="spinnerLoader" style="display:none; justify-content:center; align-items:center; margin-bottom:1rem;">
             <div class="loader"></div>
+        </div>
+
+        <div id="confidenceGaugeContainer" style="display:none; margin: 0 auto 24px auto;">
+            <svg id="confidenceGauge" width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" stroke="#e5e7eb" stroke-width="12" fill="none"/>
+                <circle id="confidenceArc" cx="60" cy="60" r="52" stroke="#00f3ff" stroke-width="12" fill="none"
+                    stroke-linecap="round" stroke-dasharray="326.7256" stroke-dashoffset="326.7256"
+                    transform="rotate(-90 60 60)"/>
+                <text id="confidenceText" x="60" y="68" text-anchor="middle" font-size="18px" fill="#00f3ff" font-weight="bold">0%</text>
+            </svg>
+            <div style="text-align:center; color:var(--primary); font-weight:600; margin-top:4px;">Confidence</div>
         </div>
     </section>
 
