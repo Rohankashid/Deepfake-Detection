@@ -24,7 +24,7 @@ body {
     margin-top: 24px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center the content horizontally */
+    align-items: center;
 }
 
 .frame-section h4 {
@@ -37,24 +37,46 @@ body {
 .frame-display-container {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
     gap: 16px;
     overflow-x: auto;
-    padding: 16px 0 12px 0;
+    padding: 16px 40px;
     scroll-behavior: smooth;
-    width: 800px;      /* For 5 frames: 5*140 + 4*16 = 780px */
-    max-width: 100vw;
+    width: 1064px;
+    max-width: calc(100% - 80px);
     min-width: 0;
     margin: 0 auto;
+    justify-content: center;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) var(--dark-alt);
 }
 
 .frame-image {
-    width: 140px;
-    height: 105px;
+    width: 200px;
+    height: 150px;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 12px;
     flex: 0 0 auto;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s;
+}
+
+.frame-image:hover {
+    transform: scale(1.03);
+}
+
+/* Custom Scrollbar */
+.frame-display-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.frame-display-container::-webkit-scrollbar-track {
+    background: var(--dark-alt);
+    border-radius: 4px;
+}
+
+.frame-display-container::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
 }
 
 header {
@@ -238,7 +260,6 @@ button:hover {
     background: linear-gradient(90deg, var(--primary, #00f3ff), var(--secondary, #6c63ff));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-fill-color: transparent;
     text-align: left;
     min-height: 2.2rem;
     margin-bottom: 10px;
@@ -248,7 +269,7 @@ button:hover {
     background: rgba(255,255,255,0.08);
     border-radius: 10px;
     padding: 16px 18px;
-    color: #fff !important;         /* <-- Always white */
+    color: #fff !important;
     font-size: 1.08rem;
     font-weight: 500;
     text-align: left;
@@ -258,13 +279,12 @@ button:hover {
     word-break: break-word;
 }
 
-/* #frameDisplay {
+#frameDisplay {
     margin: 16px 0;
     display: flex;
-    flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
-} */
+}
 
 #analyzeAnotherBtn {
     background: #007bff;
@@ -274,8 +294,8 @@ button:hover {
     padding: 10px 24px;
     font-size: 1rem;
     cursor: pointer;
-    margin: 16px auto 0 auto; /* Center horizontally and add top margin */
-    display: block;           /* Make it a block element for margin auto to work */
+    margin: 16px auto 0 auto;
+    display: block;
     transition: background 0.2s;
     text-align: center;
 }
@@ -472,13 +492,13 @@ footer {
 
 .theme-toggle-btn {
     position: fixed;
-    top: 20px;
+    top: 8px;
     left: 20px;
     z-index: 1000;
     background: var(--card-bg, #232323);
     color: var(--text-color, #f5f5f5);
     border: none;
-    border-radius: 8px; /* squared corners */
+    border-radius: 8px;
     width: 44px;
     height: 44px;
     font-size: 1.5rem;
@@ -537,175 +557,70 @@ footer {
     margin-top: 0.5rem;
 }
 
-/* --- Responsive & Mobile Styles --- */
-
-/* General container padding for mobile */
-body, .upload-container, .result-container, .features-grid, .steps-container, .about-content, .tech-stack {
-    box-sizing: border-box;
+/* --- Responsive Styles --- */
+@media (max-width: 1200px) {
+    .frame-display-container {
+        width: 840px;
+        max-width: calc(100% - 80px);
+    }
 }
 
-/* Upload container and result section */
-.upload-container, .result-container {
-    max-width: 98vw;
-    padding: 4vw 2vw;
-    margin: 2vw auto;
-}
-
-/* Responsive result summary */
-.result-summary.horizontal-result-summary {
-    flex-direction: row;
-    gap: 48px;
-    padding: 40px 40px 32px 40px;
-    max-width: 820px;
-}
 @media (max-width: 900px) {
-    .result-summary.horizontal-result-summary {
+    .frame-display-container {
+        width: 632px;
+        max-width: calc(100% - 48px);
+        padding: 16px 24px;
+    }
+    
+    .horizontal-result-summary {
         flex-direction: column;
-        align-items: center;
         gap: 24px;
-        padding: 24px 4vw 20px 4vw;
-        max-width: 98vw;
-    }
-    .result-left, .result-right {
-        align-items: center;
-        width: 100%;
-        min-width: 0;
-    }
-    #analysis-result, .justification-text {
-        text-align: center;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    .justification-text {
+        padding: 24px 4vw;
         max-width: 98vw;
     }
 }
 
-/* Features grid responsive */
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.2rem;
-    padding: 1.2rem;
-    max-width: 100vw;
-    margin: 0 auto;
-}
-.feature-card {
-    padding: 1.2rem;
-    min-width: 0;
-}
-
-/* Steps container responsive */
-.steps-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.2rem;
-    padding: 1.2rem;
-    max-width: 100vw;
-    justify-content: center;
-}
-.step {
-    flex: 1 1 220px;
-    min-width: 180px;
-    max-width: 320px;
-    margin: 0 auto;
+@media (max-width: 768px) {
+    .frame-image {
+        width: 160px;
+        height: 120px;
+    }
+    
+    .frame-display-container {
+        width: 560px;
+        max-width: calc(100% - 32px);
+        gap: 12px;
+    }
 }
 
-/* About and tech stack responsive */
-.about-content, .tech-stack {
-    padding: 1.2rem;
-    margin: 1.2rem auto;
-    max-width: 98vw;
-}
-.tech-stack ul {
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-/* Frame display responsive */
-.frame-display-container {
-    width: 100vw;
-    max-width: 100vw;
-    padding-left: 8px;
-    padding-right: 8px;
-    overflow-x: auto;
-}
-.frame-image {
-    width: 80px;
-    height: 60px;
-}
-
-/* Footer responsive */
-.footer-content {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-}
-.footer-links {
-    justify-content: center;
-    gap: 1.2rem;
-}
-
-/* Buttons and inputs */
-button, .download-report-btn, #analyzeBtn {
-    width: 100%;
-    max-width: 320px;
-    font-size: 1rem;
-    padding: 0.8rem 0;
-    margin: 0.5rem auto;
-    display: block;
-}
-input[type="file"] {
-    font-size: 1rem;
-}
-
-/* Confidence gauge SVG scales down on mobile */
-#confidenceGauge {
-    width: 90px !important;
-    height: 90px !important;
-}
 @media (max-width: 600px) {
+    .frame-image {
+        width: 140px;
+        height: 105px;
+    }
+    
+    .frame-display-container {
+        width: 480px;
+        max-width: calc(100% - 32px);
+        padding: 12px 16px;
+    }
+    
     #confidenceGauge {
         width: 70px !important;
         height: 70px !important;
     }
-    .result-summary.horizontal-result-summary {
-        padding: 12px 2vw 10px 2vw;
-    }
-    .feature-card, .about-content, .tech-stack {
-        padding: 0.8rem;
-    }
-    .step {
-        min-width: 90vw;
-        max-width: 98vw;
-    }
 }
 
-/* Hide scrollbars on mobile for frame display */
+body.light-theme {
+    --bg-color: #fff;
+    --text-color: #181818;
+    --card-bg: #f5f5f5;
+}
+
+/* Hide scrollbars on mobile */
 .frame-display-container {
     scrollbar-width: none;
 }
 .frame-display-container::-webkit-scrollbar {
     display: none;
-}
-
-body.light-theme {
-  --bg-color: #fff;
-  --text-color: #181818;
-  --card-bg: #f5f5f5;
-}
-
-body,
-.result-container,
-#analysis-result,
-#justification {
-    color: var(--text-color, #181818);
-    transition: color 0.2s;
-}
-
-body.light-theme,
-body.light-theme .result-container,
-body.light-theme #analysis-result,
-body.light-theme #justification {
-    color: #181818 !important;
 }
