@@ -46,6 +46,7 @@ function resetForm() {
         errorMessage.style.display = 'none';
         errorMessage.textContent = '';
     }
+    resetConfidenceGauge();
     // DO NOT call videoPreview.load() here!
 }
 
@@ -203,6 +204,8 @@ function uploadVideo(file) {
 }
 
 function previewVideo() {
+    resetConfidenceGauge(); // <-- Add this at the very top
+
     document.getElementById('analysis-result').innerHTML = '';
     document.getElementById('justification').innerHTML = '';
     document.getElementById('frameDisplay').innerHTML = '';
@@ -410,6 +413,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+document.getElementById('frameDisplay').addEventListener('click', function(e) {
+    if (e.target.classList.contains('frame-image')) {
+        // Remove active from all
+        document.querySelectorAll('.frame-image.active-frame').forEach(img => img.classList.remove('active-frame'));
+        // Add active to clicked
+        e.target.classList.add('active-frame');
+    }
+});
+
 function animateConfidenceGauge(targetPercent) {
     const arc = document.getElementById('confidenceArc');
     const text = document.getElementById('confidenceText');
@@ -433,4 +445,15 @@ function animateConfidenceGauge(targetPercent) {
         }
     }
     animate();
+}
+
+function resetConfidenceGauge() {
+    const arc = document.getElementById('confidenceArc');
+    const text = document.getElementById('confidenceText');
+    const gaugeContainer = document.getElementById('confidenceGaugeContainer');
+    const circleLen = 2 * Math.PI * 52;
+    arc.setAttribute('stroke-dasharray', circleLen);
+    arc.setAttribute('stroke-dashoffset', circleLen);
+    text.textContent = '0%';
+    gaugeContainer.style.display = 'none';
 }
