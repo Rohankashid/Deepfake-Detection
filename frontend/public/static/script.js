@@ -162,7 +162,7 @@ function uploadVideo(file) {
     const formData = new FormData();
     formData.append('video', file);
 
-    fetch('http://127.0.0.1:5000/upload', {
+    fetch('http://127.0.0.1:5001/upload', {
         method: 'POST',
         body: formData
     })

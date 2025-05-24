@@ -15,7 +15,19 @@ interface AnalysisResult {
   confidence: string | number;
   justification: string;
   frames?: string[];
-  [key: string]: any;
+  frame_probs?: number[][];
+}
+
+interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    borderColor: string;
+    backgroundColor: string;
+    tension: number;
+    fill: boolean;
+  }[];
 }
 
 export default function Home() {
@@ -33,10 +45,8 @@ export default function Home() {
   const [frames, setFrames] = useState<string[]>([]);
   const [showDownload, setShowDownload] = useState<boolean>(false);
   const [showFrames, setShowFrames] = useState<boolean>(false);
-  const [chartData, setChartData] = useState<any>(null); // State for chart data
+  const [chartData, setChartData] = useState<ChartData | null>(null);
   const [allowTraining, setAllowTraining] = useState<boolean>(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false); // State for share modal
-  // Initialize theme state by reading from localStorage on the client side
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('theme') as 'dark' | 'light') || 'dark';
@@ -81,9 +91,8 @@ export default function Home() {
     formData.append('video', file);
     const xhr = new XMLHttpRequest();
 
-    // Choose endpoint based on training preference
-    const endpoint = allowTrainingPref ? 'http://localhost:5001/store_for_training' : 'http://localhost:5001/upload';
-    xhr.open('POST', endpoint, true);
+    // First analyze the video
+    xhr.open('POST', 'http://localhost:5001/upload', true);
 
     xhr.upload.onprogress = function (event) {
       if (event.lengthComputable) {
@@ -93,42 +102,61 @@ export default function Home() {
 
     xhr.onload = function () {
       setIsUploading(false);
-      setIsAnalyzing(true); // Set analyzing true while processing response
+      setIsAnalyzing(true);
       console.log('XHR status:', xhr.status);
+      console.log('Raw response:', xhr.responseText);
+      
       if (xhr.status === 200) {
-        console.log('Status 200 received.');
         try {
           const data = JSON.parse(xhr.responseText);
-          console.log('Raw responseText:', xhr.responseText); // Log raw response
-          console.log('Analysis response:', data);
-          console.log('Justification from parsed data:', data.justification); // Log justification from parsed data
-          setAnalysisResult(data);
-          console.log('AnalysisResult state set:', data);
+          console.log('Parsed response:', data);
+          
+          if (data.error) {
+            setError(data.error);
+            setShowResult(false);
+            return;
+          }
+
+          // Set the analysis result with proper formatting
+          setAnalysisResult({
+            prediction: data.prediction || 'Unknown',
+            confidence: data.confidence || '0%',
+            justification: data.justification || 'No detailed analysis available.',
+            frames: data.frames || [],
+            frame_probs: data.frame_probs || []
+          });
           setShowResult(true);
-          console.log('setShowResult(true) called.');
-          setIsAnalyzing(false); // Analysis is complete
-          // Parse confidence as number
+          
+          // Parse confidence as number - handle both string and number formats
           let conf = 0;
           if (typeof data.confidence === 'string') {
+            // Remove % and convert to number
             conf = parseFloat(data.confidence.replace('%', ''));
-          } else {
+          } else if (typeof data.confidence === 'number') {
             conf = data.confidence;
           }
+          
+          console.log('Parsed confidence:', conf);
+          console.log('Prediction:', data.prediction);
+          console.log('Justification:', data.justification);
+          
           setConfidence(Math.max(0, Math.min(100, conf)));
-          setFrames(data.frames || []);
+          
+          if (data.frames && Array.isArray(data.frames)) {
+            setFrames(data.frames);
+            setShowFrames(data.frames.length > 0);
+          }
+          
           setShowDownload(true);
-          setShowFrames(data.frames && data.frames.length > 0);
 
           // Prepare chart data if frame_probs exist
-          console.log('Checking for frame_probs:', data.frame_probs);
-          console.log('Is frame_probs an array?', Array.isArray(data.frame_probs));
-
           if (data.frame_probs && Array.isArray(data.frame_probs)) {
-            setChartData({
-              labels: data.frame_probs.map((_: any, i: number) => `Frame ${i + 1}`),
+            const chartData = {
+              labels: data.frame_probs.map((_: number[], i: number) => `Frame ${i + 1}`),
               datasets: [
                 {
                   label: 'Confidence Score',
+                  // Use the second probability (fake probability) for the chart
                   data: data.frame_probs.map((c: number[]) => Math.max(0, Math.min(100, c[1] * 100))),
                   borderColor: theme === 'dark' ? 'rgba(139, 92, 246, 1)' : 'rgba(124, 58, 237, 1)',
                   backgroundColor: theme === 'dark' ? 'rgba(139, 92, 246, 0.2)' : 'rgba(124, 58, 237, 0.2)',
@@ -136,32 +164,37 @@ export default function Home() {
                   fill: true,
                 },
               ],
-            });
-          } else {
-            setChartData(null);
+            };
+            console.log('Setting chart data:', chartData);
+            setChartData(chartData);
           }
 
+          // If training is allowed, store the video for training
+          if (allowTrainingPref) {
+            const trainingXhr = new XMLHttpRequest();
+            trainingXhr.open('POST', 'http://localhost:5001/store_for_training', true);
+            trainingXhr.send(formData);
+          }
         } catch (err) {
           console.error('Error parsing response:', err);
           console.error('Raw response:', xhr.responseText);
           setError('Error parsing analysis result: ' + (err instanceof Error ? err.message : String(err)));
           setShowResult(false);
-          setIsAnalyzing(false); // Analysis is complete
         }
       } else {
         console.error('Server error:', xhr.status, xhr.statusText);
         console.error('Response:', xhr.responseText);
         setError(`Error analyzing video: ${xhr.status} ${xhr.statusText}`);
         setShowResult(false);
-        setIsAnalyzing(false); // Analysis is complete
       }
+      setIsAnalyzing(false);
     };
 
     xhr.onerror = function (e) {
       console.error('Network error:', e);
       setIsUploading(false);
-      setIsAnalyzing(false); // Analysis is complete
-      setError('Network error: Could not connect to the server. Please make sure the backend is running on http://localhost:5000');
+      setIsAnalyzing(false);
+      setError('Network error: Could not connect to the server. Please make sure the backend is running on http://localhost:5001');
     };
 
     xhr.send(formData);
@@ -208,7 +241,7 @@ export default function Home() {
       setDisplayedConfidence(0);
       return;
     }
-    let start = 0;
+    const start = 0;
     const end = confidence;
     const duration = 800;
     const startTime = performance.now();
@@ -564,9 +597,9 @@ export default function Home() {
                           <motion.p 
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className={`text-2xl sm:text-3xl font-bold ${analysisResult.prediction === 'FAKE' ? 'text-red-400' : 'text-green-400'}`}
+                            className={`text-2xl sm:text-3xl font-bold ${analysisResult.prediction.toUpperCase() === 'FAKE' ? 'text-red-400' : 'text-green-400'}`}
                           >
-                            {analysisResult.prediction === 'FAKE' ? '⚠️ This video appears to be FAKE' : '✅ This video appears to be REAL'}
+                            {analysisResult.prediction.toUpperCase() === 'FAKE' ? '⚠️ This video appears to be FAKE' : '✅ This video appears to be REAL'}
                           </motion.p>
                         )}
                       </div>
@@ -765,10 +798,12 @@ export default function Home() {
                     transition={{ duration: 0.4, delay: idx * 0.1 }}
                     className="relative group"
                   >
-                    <img
+                    <Image
                       src={`/static/frames/${url.split('/').pop()}`}
                       alt={`Extracted Frame ${idx + 1}`}
-                      className={`w-64 h-36 object-cover rounded-xl shadow-lg border-2 border-transparent transition-all duration-300 group-hover:scale-105 group-hover:border-purple-500 cursor-pointer`}
+                      width={256}
+                      height={144}
+                      className={`object-cover rounded-xl shadow-lg border-2 border-transparent transition-all duration-300 group-hover:scale-105 group-hover:border-purple-500 cursor-pointer`}
                     />
                     <div className={`absolute inset-0 bg-gradient-to-t ${theme === 'dark' ? 'from-black/60' : 'from-gray-900/60'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-end justify-center p-4`}>
                       <span className="text-white text-sm font-medium">Frame {idx + 1}</span>

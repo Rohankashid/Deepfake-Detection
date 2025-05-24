@@ -8,7 +8,10 @@ interface ShareModalProps {
   onClose: () => void;
   shareUrl: string;
   theme: 'dark' | 'light';
-  analysisResult: any; // Pass the analysis result to generate text
+  analysisResult: {
+    prediction: string;
+    confidence: string | number;
+  };
 }
 
 const ShareModal: React.FC<ShareModalProps> = ({
