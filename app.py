@@ -43,12 +43,16 @@ def predict_video(video_path, frame_skip=30, max_frames=50):
     start_time = time.time()
     print(f"Starting video analysis for: {video_path}")
     
-    # Corrected path to save frames within the frontend public directory
-    frame_save_dir = os.path.join("frontend", "public", "static", "frames")
-    # Clear the frames directory before saving new frames
-    if os.path.exists(frame_save_dir):
-        shutil.rmtree(frame_save_dir)
-    os.makedirs(frame_save_dir)
+    # Create base frames directory if it doesn't exist
+    base_frames_dir = os.path.join("frontend", "public", "static", "frames")
+    if not os.path.exists(base_frames_dir):
+        os.makedirs(base_frames_dir)
+    
+    # Create a unique directory for this analysis using timestamp and random string
+    analysis_timestamp = int(time.time())
+    unique_id = f"{analysis_timestamp}_{os.urandom(4).hex()}"
+    frame_save_dir = os.path.join(base_frames_dir, unique_id)
+    os.makedirs(frame_save_dir, exist_ok=True)
 
     def extract_landmarks_from_frame(frame):
         try:
@@ -95,12 +99,12 @@ def predict_video(video_path, frame_skip=30, max_frames=50):
                 landmarks, processed_frame = extract_landmarks_from_frame(frame)
                 if landmarks is not None:
                     features.append(landmarks)
-                    # Save frame to the corrected path
+                    # Save frame to the unique analysis directory
                     filename = f"frame_{processed_frames}.jpg"
                     filepath = os.path.join(frame_save_dir, filename)
                     cv2.imwrite(filepath, processed_frame)
-                    # The URL path should still be relative to the public directory
-                    saved_frames_paths.append(f"/static/frames/{filename}")
+                    # Update the URL path to include the unique ID
+                    saved_frames_paths.append(f"/static/frames/{unique_id}/{filename}")
                     processed_frames += 1
 
             frame_count += 1

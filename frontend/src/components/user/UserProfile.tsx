@@ -59,6 +59,7 @@ export const UserProfile = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="max-w-4xl mx-auto px-4 sm:px-6 py-8"
+      id="profile-section"
     >
       <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 sm:p-8 border border-white/20">
         {/* Profile Header */}

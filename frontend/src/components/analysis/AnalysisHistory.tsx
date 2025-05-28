@@ -42,11 +42,11 @@ export const AnalysisHistory = () => {
         // Transform the results to include thumbnails and formatted date
         const transformedResults = results.map(result => {
           const timestamp = result.timestamp instanceof Timestamp ? result.timestamp.toMillis() : new Date(result.timestamp).getTime();
+          // Get the first frame path which includes the unique ID
+          const framePath = result.frames?.[0];
           return {
             ...result,
-            thumbnail: result.frames?.[0] 
-              ? `/static/frames/${result.frames[0].split('/').pop()}?t=${timestamp}` 
-              : '/static/frames/default.jpg',
+            thumbnail: framePath || '/static/frames/default.jpg',
             date: new Date(timestamp).toLocaleDateString('en-US', {
               year: 'numeric',
               month: '2-digit',
@@ -75,8 +75,8 @@ export const AnalysisHistory = () => {
     .filter(record => {
       const matchesSearch = record.videoName.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesFilter = filterType === 'all' || 
-        (filterType === 'real' && record.prediction === 'REAL') ||
-        (filterType === 'fake' && record.prediction === 'FAKE');
+        (filterType === 'real' && record.prediction === 'Real') ||
+        (filterType === 'fake' && record.prediction === 'Fake');
       const matchesConfidence = record.confidence >= confidenceRange[0] && record.confidence <= confidenceRange[1];
       return matchesSearch && matchesFilter && matchesConfidence;
     })
@@ -123,7 +123,7 @@ export const AnalysisHistory = () => {
 
       // Add prediction with color
       doc.setFontSize(14);
-      const predictionColor = analysis.prediction === 'REAL' ? [40, 167, 69] : [220, 53, 69];
+      const predictionColor = analysis.prediction === 'Real' ? [40, 167, 69] : [220, 53, 69];
       doc.setTextColor(predictionColor[0], predictionColor[1], predictionColor[2]);
       doc.text(`Prediction: ${analysis.prediction}`, 20, yOffset);
       yOffset += 15;
@@ -259,6 +259,7 @@ export const AnalysisHistory = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="max-w-6xl mx-auto p-6"
+      id="analysis-history"
     >
       <div className={`${theme === 'dark' ? 'bg-black/40' : 'bg-white/40'} backdrop-blur-xl rounded-2xl p-8 border ${theme === 'dark' ? 'border-white/10' : 'border-gray-200'}`}>
         {/* Header Section */}
@@ -336,7 +337,7 @@ export const AnalysisHistory = () => {
                 </div>
                 <div className="flex flex-col items-end gap-2">
                   <div className={`inline-block px-4 py-2 rounded-full ${
-                    analysis.prediction === 'REAL' 
+                    analysis.prediction === 'Real' 
                       ? 'bg-green-500/20 text-green-400' 
                       : 'bg-red-500/20 text-red-400'
                   }`}>
@@ -346,7 +347,7 @@ export const AnalysisHistory = () => {
                     <div className="w-24 h-2 bg-white/10 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full ${
-                          analysis.prediction === 'REAL' ? 'bg-green-500' : 'bg-red-500'
+                          analysis.prediction === 'Real' ? 'bg-green-500' : 'bg-red-500'
                         }`}
                         style={{ width: `${analysis.confidence}%` }}
                       />
