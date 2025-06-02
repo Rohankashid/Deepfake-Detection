@@ -3,7 +3,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { NavigationProvider } from "@/contexts/NavigationContext";
 import { Navbar } from '@/components/layout/Navbar';
+import { Main } from "next/document";
+import { MainNavbar } from "@/components/layout/MainNavbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,10 +28,12 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <AuthProvider>
-            <Navbar />
-            <main className="pt-16">
-              {children}
-            </main>
+            <NavigationProvider>
+              <MainNavbar/>
+              <main className="pt-16">
+                {children}
+              </main>
+            </NavigationProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
