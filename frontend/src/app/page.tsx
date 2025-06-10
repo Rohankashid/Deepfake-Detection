@@ -991,58 +991,30 @@ export default function Home() {
                </Button>
              </div>
              <nav className="flex flex-col space-y-4">
-                <button
-                  onClick={() => {
-                    setCurrentSection('home');
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`px-4 py-3 rounded-xl transition-all duration-300 ${
-                    currentSection === 'home'
-                      ? 'bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white shadow-lg'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                  }`}
-                >
-                  Home
-                </button>
-                <button
-                  onClick={() => {
-                    setCurrentSection('history');
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`px-4 py-3 rounded-xl transition-all duration-300 ${
-                    currentSection === 'history'
-                      ? 'bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white shadow-lg'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                  }`}
-                >
-                  History
-                </button>
-                <button
-                  onClick={() => {
-                    setCurrentSection('dashboard');
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`px-4 py-3 rounded-xl transition-all duration-300 ${
-                    currentSection === 'dashboard'
-                      ? 'bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white shadow-lg'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                  }`}
-                >
-                  Dashboard
-                </button>
-                <button
-                  onClick={() => {
-                    setCurrentSection('profile');
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`px-4 py-3 rounded-xl transition-all duration-300 ${
-                    currentSection === 'profile'
-                      ? 'bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white shadow-lg'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                  }`}
-                >
-                  Profile
-                </button>
+                {['home', 'history', 'dashboard', 'profile'].map(section => (
+                  <button
+                    key={section}
+                    onClick={() => {
+                      setCurrentSection(section as any);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`w-full relative px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 overflow-hidden group
+                      ${currentSection === section
+                        ? 'bg-gray-800 text-white shadow'
+                        : 'bg-transparent text-gray-200 hover:text-white hover:bg-gray-700/60'}
+                    `}
+                    style={{ background: 'none' }} // <-- This will override any inline blue background
+                  >
+                    <span className="relative z-10">{section.charAt(0).toUpperCase() + section.slice(1)}</span>
+                    {currentSection === section && (
+                      <motion.div
+                        layoutId="activeNavMobile"
+                        className="absolute inset-0 bg-gray-800"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                  </button>
+                ))}
              </nav>
            </motion.div>
         )}

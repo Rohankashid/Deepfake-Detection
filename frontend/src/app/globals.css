@@ -535,3 +535,8 @@ body.light-theme {
     @apply bg-background text-foreground;
   }
 }
+
+nav button, nav button:active, nav button:focus {
+  background: none !important;
+  color: inherit !important;
+}
