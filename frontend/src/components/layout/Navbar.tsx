@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useNavigation } from '@/contexts/NavigationContext';
 
 // Avatar styles configuration using API URLs
 type AvatarStyle = 'adventurer' | 'bottts' | 'lorelei' | 'micah' | 'pixel-art';
@@ -40,6 +41,7 @@ export const Navbar = () => {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+  const { currentSection, setCurrentSection } = useNavigation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [avatarStyle, setAvatarStyle] = useState<AvatarStyle>('adventurer');
   const [notifications, setNotifications] = useState(true);
@@ -47,28 +49,8 @@ export const Navbar = () => {
 
   const handleAnalysisHistoryClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (pathname !== '/') {
-      router.push('/');
-      setTimeout(() => {
-        const element = document.getElementById('analysis-history');
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    } else {
-      const element = document.getElementById('analysis-history');
-      if (element) {
-        const rect = element.getBoundingClientRect();
-        const isInView = (
-          rect.top >= 0 &&
-          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-        );
-        
-        if (!isInView) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    }
+    setCurrentSection('history');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Generate a consistent seed from user's email
@@ -95,24 +77,16 @@ export const Navbar = () => {
             } transition-colors duration-200`}>
               Home
             </Link>
-            {user && (
+            {/* {user && (
               <>
                 <Link href="/dashboard" className={`${
                   theme === 'dark' ? 'text-white/60 hover:text-white' : 'text-gray-600 hover:text-gray-900'
                 } transition-colors duration-200`}>
                   Dashboard
                 </Link>
-                <Link 
-                  href="/" 
-                  onClick={handleAnalysisHistoryClick}
-                  className={`${
-                    theme === 'dark' ? 'text-white/60 hover:text-white' : 'text-gray-600 hover:text-gray-900'
-                  } transition-colors duration-200`}
-                >
-                  Analysis History
-                </Link>
+               
               </>
-            )}
+            )} */}
           </div>
 
           {/* User Profile */}
@@ -262,4 +236,4 @@ export const Navbar = () => {
       </div>
     </nav>
   );
-}; 
+};

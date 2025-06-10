@@ -17,8 +17,11 @@ import autoTable from 'jspdf-autotable';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { UserProfile } from '@/components/user/UserProfile';
+import { UserProfileDropdown } from '@/components/user/UserProfileDropdown';
 import { AnalysisHistory } from '@/components/analysis/AnalysisHistory';
 import { saveAnalysisResult } from '@/services/analysisService';
+import { Navbar } from '@/components/layout/Navbar';
+import { Dashboard } from '@/components/dashboard/Dashboard';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ChartTitle, Tooltip, Legend, Filler);
 
@@ -47,7 +50,7 @@ interface Frame {
   timestamp: number;
 }
 
-type PageSection = 'home' | 'profile' | 'history';
+type PageSection = 'home' | 'profile' | 'history' | 'dashboard';
 
 const SpaceBackground = ({ theme }: { theme: 'dark' | 'light' }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -779,7 +782,10 @@ export default function Home() {
   }
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gradient-to-b from-gray-900 via-gray-800 to-black' : 'bg-gradient-to-b from-gray-50 via-gray-100 to-white'} overflow-x-hidden will-change-transform`}>
+    <>
+      {/* <Navbar /> */}
+      <div className={`min-h-screen ${theme === 'dark' ? 'bg-gradient-to-b from-gray-900 via-gray-800 to-black' : 'bg-gradient-to-b from-gray-50 via-gray-100 to-white'} overflow-x-hidden will-change-transform`}>
+      
       <ScrollProgress />
       <header className={`w-full fixed top-0 z-50 backdrop-blur-md ${theme === 'dark' ? 'bg-black/40 border-white/10' : 'bg-white/40 border-gray-200'} border-b sticky top-0 shadow-lg`}>
         {/* Theme Toggle Button (Absolute Positioned to Header) */}
@@ -810,7 +816,7 @@ export default function Home() {
               className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
                 currentSection === 'home'
                   ? 'bg-gray-800 text-white shadow-lg'
-                  : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <span className="relative z-10">Home</span>
@@ -827,7 +833,7 @@ export default function Home() {
               className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
                 currentSection === 'history'
                   ? 'bg-gray-800 text-white shadow-lg'
-                  : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <span className="relative z-10">History</span>
@@ -840,11 +846,28 @@ export default function Home() {
               )}
             </button>
             <button
+              onClick={() => setCurrentSection('dashboard')}
+              className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
+                currentSection === 'dashboard'
+                  ? 'bg-gray-800 text-white shadow-lg'
+                  : 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
+              }`}
+            >
+              <span className="relative z-10">Dashboard</span>
+              {currentSection === 'dashboard' && (
+                <motion.div
+                  layoutId="activeNav"
+                  className="absolute inset-0 bg-gray-800"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+            </button>
+            <button
               onClick={() => setCurrentSection('profile')}
               className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
                 currentSection === 'profile'
                   ? 'bg-gray-800 text-white shadow-lg'
-                  : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <span className="relative z-10">Profile</span>
@@ -856,6 +879,8 @@ export default function Home() {
                 />
               )}
             </button>
+            {/* Add the UserProfileDropdown at the rightmost */}
+            <UserProfileDropdown />
           </nav>
         </nav>
       </header>
@@ -889,6 +914,23 @@ export default function Home() {
         >
           <span className="relative z-10">History</span>
           {currentSection === 'history' && (
+            <motion.div
+              layoutId="activeNavMobile"
+              className="absolute inset-0 bg-gray-800"
+              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+            />
+          )}
+        </button>
+        <button
+          onClick={() => setCurrentSection('dashboard')}
+          className={`relative w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
+            currentSection === 'dashboard'
+              ? 'bg-gray-800 text-white shadow-lg'
+              : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+          }`}
+        >
+          <span className="relative z-10">Dashboard</span>
+          {currentSection === 'dashboard' && (
             <motion.div
               layoutId="activeNavMobile"
               className="absolute inset-0 bg-gray-800"
@@ -974,6 +1016,19 @@ export default function Home() {
                   }`}
                 >
                   History
+                </button>
+                <button
+                  onClick={() => {
+                    setCurrentSection('dashboard');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`px-4 py-3 rounded-xl transition-all duration-300 ${
+                    currentSection === 'dashboard'
+                      ? 'bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white shadow-lg'
+                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  }`}
+                >
+                  Dashboard
                 </button>
                 <button
                   onClick={() => {
@@ -1559,6 +1614,7 @@ export default function Home() {
                 >
                   <div className="max-w-7xl mx-auto">
                     <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">Core Features</h2>
+                    <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">Core Features</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                       {[
                         {
@@ -1592,8 +1648,8 @@ export default function Home() {
                         >
                           <div className="text-5xl mb-6 transform group-hover:scale-110 transition-transform duration-300">{feature.icon}</div>
                           <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-4 group-hover:text-purple-500 transition-colors`}>{feature.title}</h3>
-                          <p className={`${theme === 'dark' ? 'text-white/70' : 'text-gray-600'} leading-relaxed group-hover:${theme === 'dark' ? 'text-white/90' : 'text-gray-700'} transition-colors`}>{feature.description}</p>
-                        </motion.div>
+                            <p className={`${theme === 'dark' ? 'text-white/70' : 'text-gray-600'} leading-relaxed group-hover:${theme === 'dark' ? 'text-white/90' : 'text-gray-700'} transition-colors`}>{feature.description}</p>
+                          </motion.div>
                       ))}
                     </div>
                   </div>
@@ -1720,6 +1776,18 @@ export default function Home() {
             <AnalysisHistory />
           </motion.div>
         )}
+
+        {currentSection === 'dashboard' && (
+          <motion.div
+            key="dashboard"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="pt-24"
+          >
+            <Dashboard />
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <motion.footer
@@ -1743,5 +1811,6 @@ export default function Home() {
         </div>
       </motion.footer>
     </div>
+    </>
   );
 }
