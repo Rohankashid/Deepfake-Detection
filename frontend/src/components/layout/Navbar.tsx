@@ -6,9 +6,8 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { usePathname, useRouter } from 'next/navigation';
+
 import Image from 'next/image';
-import { useNavigation } from '@/contexts/NavigationContext';
 
 // Avatar styles configuration using API URLs
 type AvatarStyle = 'adventurer' | 'bottts' | 'lorelei' | 'micah' | 'pixel-art';
@@ -39,19 +38,13 @@ const AVATAR_STYLES: Record<AvatarStyle, { url: string; name: string }> = {
 export const Navbar = () => {
   const { theme } = useTheme();
   const { user, logout } = useAuth();
-  const pathname = usePathname();
-  const router = useRouter();
-  const { currentSection, setCurrentSection } = useNavigation();
+
+
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [avatarStyle, setAvatarStyle] = useState<AvatarStyle>('adventurer');
   const [notifications, setNotifications] = useState(true);
   const [dataSharing, setDataSharing] = useState(false);
 
-  const handleAnalysisHistoryClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setCurrentSection('history');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   // Generate a consistent seed from user's email
   const avatarSeed = user?.email || 'default';
@@ -98,9 +91,11 @@ export const Navbar = () => {
                   className="rounded-full"
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
                 >
-                  <img
+                  <Image
                     src={avatarUrl}
                     alt="User Avatar"
+                    width={32}
+                    height={32}
                     className="w-8 h-8 rounded-full"
                   />
                 </Button>
@@ -127,9 +122,11 @@ export const Navbar = () => {
                         <div className="p-4">
                           {/* User Info */}
                           <div className="flex items-center space-x-3 mb-4">
-                            <img
+                            <Image
                               src={avatarUrl}
                               alt="User Avatar"
+                              width={48}
+                              height={48}
                               className="w-12 h-12 rounded-full"
                             />
                             <div>
@@ -199,10 +196,12 @@ export const Navbar = () => {
                                       : 'bg-white/5 hover:bg-white/10'
                                   }`}
                                 >
-                                  <img
+                                  <Image
                                     src={`${config.url}${avatarSeed}`}
-                                    alt={`${config.name} avatar`}
-                                    className="w-full h-full rounded"
+                                    alt={`${config.name} Avatar`}
+                                    width={32}
+                                    height={32}
+                                    className="w-8 h-8 rounded-full"
                                   />
                                 </button>
                               ))}

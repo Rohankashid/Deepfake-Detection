@@ -2,8 +2,7 @@
 
 import React, { createContext, useContext, useState } from "react";
 
-type PageSection = 'home' | 'profile' | 'history';
-
+export type PageSection = 'home' | 'profile' | 'history';
 interface NavigationContextType {
   currentSection: PageSection;
   setCurrentSection: (section: PageSection) => void;

@@ -7,10 +7,11 @@ import {
   getDocs, 
   orderBy, 
   Timestamp,
-  DocumentData,
   doc,
   deleteDoc
 } from 'firebase/firestore';
+
+type FirestoreFrameProb = { frameIndex: number; realProb: number; fakeProb: number };
 
 export interface AnalysisResult {
   id?: string;
@@ -59,7 +60,7 @@ export const getUserAnalysisHistory = async (userId: string) => {
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
       // Convert frameProbs back to the original format
-      const frameProbs = data.frameProbs?.map((prob: any) => [prob.realProb, prob.fakeProb]) || [];
+      const frameProbs = (data.frameProbs as FirestoreFrameProb[] | undefined)?.map((prob) => [prob.realProb, prob.fakeProb]) || [];
       return {
         id: doc.id,
         ...data,
@@ -84,7 +85,7 @@ export const getTrainingData = async () => {
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
       // Convert frameProbs back to the original format
-      const frameProbs = data.frameProbs?.map((prob: any) => [prob.realProb, prob.fakeProb]) || [];
+      const frameProbs = (data.frameProbs as FirestoreFrameProb[] | undefined)?.map((prob) => [prob.realProb, prob.fakeProb]) || [];
       return {
         id: doc.id,
         ...data,
@@ -105,4 +106,4 @@ export const deleteAnalysisResult = async (analysisId: string): Promise<void> =>
     console.error('Error deleting analysis result:', error);
     throw error;
   }
-}; 
+};

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import Image from 'next/image';
 
 type AvatarStyle = 'adventurer' | 'bottts' | 'lorelei' | 'micah' | 'pixel-art';
 
@@ -51,9 +52,11 @@ export const UserProfileDropdown = () => {
         className="rounded-full"
         onClick={() => setShowProfileMenu(!showProfileMenu)}
       >
-        <img
+        <Image
           src={avatarUrl}
           alt="User Avatar"
+          width={32}
+          height={32}
           className="w-8 h-8 rounded-full"
         />
       </Button>
@@ -80,9 +83,11 @@ export const UserProfileDropdown = () => {
               <div className="p-4">
                 {/* User Info */}
                 <div className="flex items-center space-x-3 mb-4">
-                  <img
+                  <Image
                     src={avatarUrl}
                     alt="User Avatar"
+                    width={48}
+                    height={48}
                     className="w-12 h-12 rounded-full"
                   />
                   <div>
@@ -152,10 +157,12 @@ export const UserProfileDropdown = () => {
                             : 'bg-white/5 hover:bg-white/10'
                         }`}
                       >
-                        <img
+                        <Image
                           src={`${config.url}${avatarSeed}`}
-                          alt={`${config.name} avatar`}
-                          className="w-full h-full rounded"
+                          alt={`${config.name} Avatar`}
+                          width={32}
+                          height={32}
+                          className="w-8 h-8 rounded-full"
                         />
                       </button>
                     ))}

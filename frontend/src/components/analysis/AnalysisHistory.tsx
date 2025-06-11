@@ -7,6 +7,7 @@ import { getUserAnalysisHistory, AnalysisResult, deleteAnalysisResult } from '@/
 import { Timestamp } from 'firebase/firestore';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import Image from 'next/image';
 
 interface AnalysisRecord extends AnalysisResult {
   thumbnail: string;
@@ -23,8 +24,8 @@ export const AnalysisHistory = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisRecord | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
-  const [confidenceRange, setConfidenceRange] = useState<[number, number]>([0, 100]);
+  const [sortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [confidenceRange] = useState<[number, number]>([0, 100]);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   useEffect(() => {
@@ -293,7 +294,9 @@ export const AnalysisHistory = () => {
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-500"
+              className={`px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500
+                ${theme === 'dark' ? 'text-white' : 'text-black'}
+              `}
             >
               <option value="all">All Results</option>
               <option value="real">Real</option>
@@ -318,19 +321,25 @@ export const AnalysisHistory = () => {
                 animate={{ opacity: 1 }}
                 className="bg-white/5 rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center gap-6 hover:bg-white/10 transition-all duration-300 group"
               >
-                <div className="w-full md:w-48 h-32 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow">
-                  <img
-                    src={analysis.thumbnail}
-                    alt={analysis.videoName}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/static/frames/default.jpg';
-                    }}
+                <div className={`w-full md:w-48 h-32 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow ${
+                  theme === 'dark' ? 'bg-black/40' : 'bg-gray-100'
+                }`}>
+                  <Image
+                  width={1920}
+                  height={1080}
+                  src={analysis.thumbnail}
+                  alt={analysis.videoName}
+                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/static/frames/default.jpg';
+                  }}
                   />
                 </div>
                 <div className="flex-grow">
-                  <h3 className="text-xl font-semibold text-white mb-2">{analysis.videoName}</h3>
+                  <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+                    {analysis.videoName}
+                  </h3>
                   <p className={`${theme === 'dark' ? 'text-white/60' : 'text-gray-600'}`}>
                     Analyzed on {analysis.date}
                   </p>
@@ -360,7 +369,7 @@ export const AnalysisHistory = () => {
                 <div className="flex gap-2">
                   <Button
                     onClick={() => handleViewDetails(analysis)}
-                    className="px-4 py-2 bg-white/10 text-white hover:bg-white/20 transition-all duration-300 rounded-xl group-hover:shadow-lg"
+                    className={`px-4 py-2 bg-white/10 ${theme === 'dark' ? 'text-white' : 'text-black'} hover:bg-white/20 transition-all duration-300 rounded-xl group-hover:shadow-lg`}
                   >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -459,4 +468,4 @@ export const AnalysisHistory = () => {
       </div>
     </motion.div>
   );
-}; 
+};

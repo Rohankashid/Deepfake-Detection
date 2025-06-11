@@ -7,27 +7,14 @@ import Image from 'next/image';
 
 // Avatar styles configuration using API URLs
 const AVATAR_STYLES = {
-  'adventurer': {
-    url: 'https://api.dicebear.com/7.x/adventurer/svg?backgroundColor=65c9ff&seed=',
-    name: 'Adventurer'
-  },
-  'bottts': {
-    url: 'https://api.dicebear.com/7.x/bottts/svg?backgroundColor=65c9ff&seed=',
-    name: 'Robot'
-  },
-  'lorelei': {
-    url: 'https://api.dicebear.com/7.x/lorelei/svg?backgroundColor=65c9ff&seed=',
-    name: 'Lorelei'
-  },
-  'micah': {
-    url: 'https://api.dicebear.com/7.x/micah/svg?backgroundColor=65c9ff&seed=',
-    name: 'Micah'
-  },
-  'pixel-art': {
-    url: 'https://api.dicebear.com/7.x/pixel-art/svg?backgroundColor=65c9ff&seed=',
-    name: 'Pixel Art'
-  }
-};
+  'adventurer': { url: 'https://api.dicebear.com/7.x/adventurer/svg?backgroundColor=65c9ff&seed=', name: 'Adventurer' },
+  'bottts': { url: 'https://api.dicebear.com/7.x/bottts/svg?backgroundColor=65c9ff&seed=', name: 'Robot' },
+  'lorelei': { url: 'https://api.dicebear.com/7.x/lorelei/svg?backgroundColor=65c9ff&seed=', name: 'Lorelei' },
+  'micah': { url: 'https://api.dicebear.com/7.x/micah/svg?backgroundColor=65c9ff&seed=', name: 'Micah' },
+  'pixel-art': { url: 'https://api.dicebear.com/7.x/pixel-art/svg?backgroundColor=65c9ff&seed=', name: 'Pixel Art' }
+} as const;
+
+type AvatarStyle = keyof typeof AVATAR_STYLES;
 
 export const UserProfile = () => {
   const { user, logout } = useAuth();
@@ -35,7 +22,7 @@ export const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [dataSharing, setDataSharing] = useState(false);
-  const [avatarStyle, setAvatarStyle] = useState('adventurer');
+  const [avatarStyle, setAvatarStyle] = useState<AvatarStyle>('adventurer');
   const [isHovering, setIsHovering] = useState(false);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
 
@@ -95,7 +82,7 @@ export const UserProfile = () => {
             <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text mb-2">
               {user?.email || 'Guest User'}
             </h2>
-            <p className={`${theme === 'dark' ? 'text-white/60' : 'text-gray-600'} text-sm sm:text-base`}>
+            <p className={`${theme === 'dark' ? 'text-white' : 'text-black'} text-sm sm:text-base`}>
               {isLoggedIn ? 'Your AI-powered avatar companion' : 'Proceeding without login'}
             </p>
           </div>
@@ -107,7 +94,7 @@ export const UserProfile = () => {
                 className={`px-3 sm:px-4 py-2 transition-all duration-300 rounded-xl ${
                   theme === 'dark'
                     ? 'bg-white/10 text-white hover:bg-white/20'
-                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                    : 'bg-gray-100 text-black hover:bg-gray-200'
                 }`}
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,10 +107,13 @@ export const UserProfile = () => {
                 className={`px-3 sm:px-4 py-2 transition-all duration-300 rounded-xl ${
                   theme === 'dark'
                     ? 'bg-white/10 text-white hover:bg-white/20'
-                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                    : 'bg-gray-100 text-black hover:bg-gray-200'
                 }`}
               >
-                {isEditing ? 'Save Changes' : 'Edit Profile'}
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 4h2a2 2 0 012 2v2m-6 8h-2a2 2 0 01-2-2v-2m8-6h-2a2 2 0 00-2 2v2m-6 8h-2a2 2 0 01-2-2v-2" />
+                </svg>
+                <span className="ml-1 sm:ml-2">Edit Profile</span>
               </Button>
             </div>
           ) : (
@@ -152,7 +142,7 @@ export const UserProfile = () => {
                   <motion.button
                     key={style}
                     onClick={() => {
-                      setAvatarStyle(style);
+                      setAvatarStyle(style as AvatarStyle);
                       setShowAvatarSelector(false);
                     }}
                     className={`p-2 rounded-xl transition-all duration-300 ${
@@ -184,17 +174,16 @@ export const UserProfile = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
             {/* Account Settings */}
             <div className="space-y-4">
-              <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-4`}>
+              <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-black'} mb-4`}>
                 Account Settings
               </h3>
-              
               {/* Email Notifications */}
               <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300">
                 <div className="flex-grow mr-4">
-                  <h4 className={`font-medium mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  <h4 className={`font-medium mb-1 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
                     Email Notifications
                   </h4>
-                  <p className={`text-sm ${theme === 'dark' ? 'text-white/60' : 'text-gray-600'}`}>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white/60' : 'text-black/60'}`}>
                     Receive updates about your analyses
                   </p>
                 </div>
@@ -212,14 +201,13 @@ export const UserProfile = () => {
                   }`}></div>
                 </label>
               </div>
-
               {/* Data Sharing */}
               <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300">
                 <div className="flex-grow mr-4">
-                  <h4 className={`font-medium mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  <h4 className={`font-medium mb-1 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
                     Data Sharing
                   </h4>
-                  <p className={`text-sm ${theme === 'dark' ? 'text-white/60' : 'text-gray-600'}`}>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white/60' : 'text-black/60'}`}>
                     Help improve our detection model
                   </p>
                 </div>
@@ -241,14 +229,13 @@ export const UserProfile = () => {
 
             {/* Usage Statistics */}
             <div className="space-y-4">
-              <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-4`}>
+              <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-black'} mb-4`}>
                 Usage Statistics
               </h3>
-              
               {/* Total Analyses */}
               <div className="p-4 sm:p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  <h4 className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
                     Total Analyses
                   </h4>
                   <span className="text-xl sm:text-2xl font-bold text-purple-500">24</span>
@@ -257,11 +244,10 @@ export const UserProfile = () => {
                   <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500" style={{ width: '60%' }} />
                 </div>
               </div>
-
               {/* Storage Used */}
               <div className="p-4 sm:p-6 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  <h4 className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
                     Storage Used
                   </h4>
                   <span className="text-xl sm:text-2xl font-bold text-purple-500">2.4 GB</span>
@@ -288,4 +274,4 @@ export const UserProfile = () => {
       </div>
     </motion.div>
   );
-}; 
+};

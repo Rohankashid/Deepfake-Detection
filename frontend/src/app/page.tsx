@@ -7,11 +7,6 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title as ChartTitle, Tooltip, Legend, Filler } from 'chart.js';
-import * as THREE from 'three';
-import { useAnimation } from 'framer-motion';
-import Particles from 'react-tsparticles';
-import { loadFull } from "tsparticles";
-import type { Engine } from 'tsparticles-engine';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,7 +15,6 @@ import { UserProfile } from '@/components/user/UserProfile';
 import { UserProfileDropdown } from '@/components/user/UserProfileDropdown';
 import { AnalysisHistory } from '@/components/analysis/AnalysisHistory';
 import { saveAnalysisResult } from '@/services/analysisService';
-import { Navbar } from '@/components/layout/Navbar';
 import { Dashboard } from '@/components/dashboard/Dashboard';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ChartTitle, Tooltip, Legend, Filler);
@@ -251,7 +245,7 @@ const LayerTransition = ({ children, className = "", index = 0 }: { children: Re
   );
 };
 
-const SectionWrapper = ({ children, className = "", index = 0 }: { children: React.ReactNode; className?: string; index?: number }) => {
+const SectionWrapper = ({ children, className = "" }: { children: React.ReactNode; className?: string; index?: number }) => {
   return (
     <div className={`relative min-h-screen ${className}`}>
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/5 to-transparent" />
@@ -700,7 +694,6 @@ export default function Home() {
 
   // Update the scroll handling
   useEffect(() => {
-    let scrollTimeout: NodeJS.Timeout;
     let lastScrollY = window.scrollY;
     let ticking = false;
 
@@ -813,10 +806,12 @@ export default function Home() {
           <nav className="hidden md:flex items-center space-x-2 ml-8">
             <button
               onClick={() => setCurrentSection('home')}
-              className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
+              className={`relative px-4 py-2 rounded-lg text-sm font-bold transition-all duration-300 overflow-hidden group ${
                 currentSection === 'home'
                   ? 'bg-gray-800 text-white shadow-lg'
-                  : 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : theme === 'dark'
+                    ? 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
+                    : 'bg-transparent text-black hover:text-white hover:bg-gray-700/50 drop-shadow'
               }`}
             >
               <span className="relative z-10">Home</span>
@@ -833,7 +828,9 @@ export default function Home() {
               className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
                 currentSection === 'history'
                   ? 'bg-gray-800 text-white shadow-lg'
-                  : 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : theme === 'dark'
+                    ? 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
+                    : 'bg-transparent text-black hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <span className="relative z-10">History</span>
@@ -850,7 +847,9 @@ export default function Home() {
               className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
                 currentSection === 'dashboard'
                   ? 'bg-gray-800 text-white shadow-lg'
-                  : 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : theme === 'dark'
+                    ? 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
+                    : 'bg-transparent text-black hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <span className="relative z-10">Dashboard</span>
@@ -867,7 +866,9 @@ export default function Home() {
               className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
                 currentSection === 'profile'
                   ? 'bg-gray-800 text-white shadow-lg'
-                  : 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : theme === 'dark'
+                    ? 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
+                    : 'bg-transparent text-black hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <span className="relative z-10">Profile</span>
@@ -892,7 +893,9 @@ export default function Home() {
           className={`relative w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
             currentSection === 'home'
               ? 'bg-gray-800 text-white shadow-lg'
-              : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+              : theme === 'dark'
+                ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                : 'text-black hover:text-white hover:bg-gray-700/50'
           }`}
         >
           <span className="relative z-10">Home</span>
@@ -909,7 +912,9 @@ export default function Home() {
           className={`relative w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
             currentSection === 'history'
               ? 'bg-gray-800 text-white shadow-lg'
-              : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+              : theme === 'dark'
+                ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                : 'text-black hover:text-white hover:bg-gray-700/50'
           }`}
         >
           <span className="relative z-10">History</span>
@@ -926,7 +931,9 @@ export default function Home() {
           className={`relative w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
             currentSection === 'dashboard'
               ? 'bg-gray-800 text-white shadow-lg'
-              : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+              : theme === 'dark'
+                ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                : 'text-black hover:text-white hover:bg-gray-700/50'
           }`}
         >
           <span className="relative z-10">Dashboard</span>
@@ -943,7 +950,9 @@ export default function Home() {
           className={`relative w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
             currentSection === 'profile'
               ? 'bg-gray-800 text-white shadow-lg'
-              : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+              : theme === 'dark'
+                ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                : 'text-black hover:text-white hover:bg-gray-700/50'
           }`}
         >
           <span className="relative z-10">Profile</span>
@@ -995,7 +1004,7 @@ export default function Home() {
                   <button
                     key={section}
                     onClick={() => {
-                      setCurrentSection(section as any);
+                      setCurrentSection(section as PageSection);
                       setIsMobileMenuOpen(false);
                     }}
                     className={`w-full relative px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 overflow-hidden group
@@ -1585,7 +1594,6 @@ export default function Home() {
                   className="py-24 px-4 relative"
                 >
                   <div className="max-w-7xl mx-auto">
-                    <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">Core Features</h2>
                     <h2 className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">Core Features</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                       {[

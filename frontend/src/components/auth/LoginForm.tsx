@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface LoginFormProps {
@@ -25,7 +24,7 @@ export const LoginForm = ({ setCurrentSection }: LoginFormProps) => {
     try {
       await signIn(email, password);
       setCurrentSection('home');
-    } catch (err) {
+    } catch {
       setError('Failed to sign in. Please check your credentials.');
     } finally {
       setLoading(false);
@@ -39,7 +38,7 @@ export const LoginForm = ({ setCurrentSection }: LoginFormProps) => {
     try {
       await signInWithGoogle();
       setCurrentSection('home');
-    } catch (err) {
+    } catch {
       setError('Failed to sign in with Google.');
     } finally {
       setLoading(false);
@@ -221,4 +220,4 @@ export const LoginForm = ({ setCurrentSection }: LoginFormProps) => {
       </form>
     </motion.div>
   );
-}; 
+};

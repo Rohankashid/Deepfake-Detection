@@ -6,6 +6,11 @@ import { useNavigation } from '@/contexts/NavigationContext';
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 
+// Import PageSection type from the correct context or define it to match your NavigationContext
+import type { PageSection } from '@/contexts/NavigationContext';
+
+type Section = PageSection;
+
 export const MainNavbar = () => {
   const { theme, toggleTheme } = useTheme();
   const { currentSection, setCurrentSection } = useNavigation();
@@ -39,11 +44,13 @@ export const MainNavbar = () => {
           {['home', 'history', 'dashboard', 'profile'].map(section => (
             <button
               key={section}
-              onClick={() => setCurrentSection(section as any)}
+              onClick={() => setCurrentSection(section as Section)}
               className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
                 currentSection === section
                   ? 'bg-gray-800 text-white shadow-lg'
-                  : 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : theme === 'dark'
+                    ? 'bg-transparent text-gray-300 hover:text-white hover:bg-gray-700/50'
+                    : 'bg-transparent text-black hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <span className="relative z-10">{section.charAt(0).toUpperCase() + section.slice(1)}</span>
@@ -107,13 +114,15 @@ export const MainNavbar = () => {
                   <button
                     key={section}
                     onClick={() => {
-                      setCurrentSection(section as any);
+                      setCurrentSection(section as Section);
                       setIsMobileMenuOpen(false);
                     }}
                     className={`px-4 py-3 rounded-xl transition-all duration-300 ${
                       currentSection === section
                         ? 'bg-gray-800 text-white shadow-lg'
-                        : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                        : theme === 'dark'
+                          ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                          : 'text-black hover:text-white hover:bg-gray-700/50'
                     }`}
                   >
                     {section.charAt(0).toUpperCase() + section.slice(1)}

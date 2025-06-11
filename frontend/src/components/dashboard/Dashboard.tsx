@@ -112,21 +112,21 @@ export const Dashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className={`${theme === 'dark' ? 'bg-white/5' : 'bg-white'} p-6 rounded-xl shadow-lg`}>
-            <h3 className="text-lg font-semibold mb-2">Total Analyses</h3>
-            <p className="text-3xl font-bold text-purple-500">{stats.totalAnalyses}</p>
+          <div className="bg-transparent p-6 rounded-xl shadow-lg">
+            <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Total Analyses</h3>
+            <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}`}>{stats.totalAnalyses}</p>
           </div>
-          <div className={`${theme === 'dark' ? 'bg-white/5' : 'bg-white'} p-6 rounded-xl shadow-lg`}>
-            <h3 className="text-lg font-semibold mb-2">Real Videos</h3>
-            <p className="text-3xl font-bold text-green-500">{stats.realCount}</p>
+          <div className="bg-transparent p-6 rounded-xl shadow-lg">
+            <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Real Videos</h3>
+            <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>{stats.realCount}</p>
           </div>
-          <div className={`${theme === 'dark' ? 'bg-white/5' : 'bg-white'} p-6 rounded-xl shadow-lg`}>
-            <h3 className="text-lg font-semibold mb-2">Fake Videos</h3>
-            <p className="text-3xl font-bold text-red-500">{stats.fakeCount}</p>
+          <div className="bg-transparent p-6 rounded-xl shadow-lg">
+            <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Fake Videos</h3>
+            <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>{stats.fakeCount}</p>
           </div>
-          <div className={`${theme === 'dark' ? 'bg-white/5' : 'bg-white'} p-6 rounded-xl shadow-lg`}>
-            <h3 className="text-lg font-semibold mb-2">Avg. Confidence</h3>
-            <p className="text-3xl font-bold text-blue-500">{stats.averageConfidence.toFixed(1)}%</p>
+          <div className="bg-transparent p-6 rounded-xl shadow-lg">
+            <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Avg. Confidence</h3>
+            <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>{stats.averageConfidence.toFixed(1)}%</p>
           </div>
         </div>
 
@@ -150,7 +150,9 @@ export const Dashboard = () => {
 
           {/* Prediction Distribution Chart */}
           <div className={`${theme === 'dark' ? 'bg-white/5' : 'bg-white'} p-6 rounded-xl shadow-lg`}>
-            <h3 className="text-lg font-semibold mb-4">Prediction Distribution</h3>
+            <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+              Prediction Distribution
+            </h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -180,7 +182,9 @@ export const Dashboard = () => {
 
         {/* Recent Analyses */}
         <div className={`${theme === 'dark' ? 'bg-white/5' : 'bg-white'} p-6 rounded-xl shadow-lg`}>
-          <h3 className="text-lg font-semibold mb-4">Recent Analyses</h3>
+          <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+            Recent Analyses
+          </h3>
           <div className="space-y-4">
             {stats.recentAnalyses.map((analysis) => (
               <div
@@ -212,4 +216,4 @@ export const Dashboard = () => {
       </div>
     </motion.div>
   );
-}; 
+};
