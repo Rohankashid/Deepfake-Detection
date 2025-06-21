@@ -1,14 +1,19 @@
 services:
   - type: web
-    name: deepfake-detection
+    name: deepfake-detection-backend
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --config gunicorn_config.py wsgi:app
+    pythonVersion: "3.9"
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: "gunicorn --config gunicorn_config.py wsgi:app"
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.9.18"
       - key: FLASK_APP
-        value: app.py
+        value: "app.py"
       - key: FLASK_ENV
-        value: production
+        value: "production"
     plan: free
-    healthCheckPath: /
-    autoDeploy: true 
+    autoDeploy: true
+    healthCheckPath: / 
