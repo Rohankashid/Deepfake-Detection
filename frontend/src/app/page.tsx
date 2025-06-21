@@ -690,7 +690,6 @@ export default function Home() {
   };
 
   // Mobile menu state
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Add this useEffect for frame cleanup
   useEffect(() => {
