@@ -1,36 +1,36 @@
-FROM python:3.9-slim
+# Use a more complete base image for better compatibility with C++ extensions
+FROM python:3.9-buster
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Set environment variables to prevent interactive prompts during build
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies required for dlib, OpenCV, etc.
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
-    libopenblas-dev \
-    liblapack-dev \
+    pkg-config \
     libx11-dev \
+    libatlas-base-dev \
     libgtk-3-dev \
-    && rm -rf /var/lib/apt/lists/*
+    libboost-python-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
+# Copy requirements file first to leverage Docker's layer caching
 COPY requirements.txt .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Upgrade pip and install Python packages
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application
+# Copy the rest of the application code
 COPY . .
 
-# Create necessary directories
-RUN mkdir -p uploads training_data/real training_data/fake
+# Render will set the PORT environment variable, which gunicorn_config.py uses.
+# EXPOSE is not required by Render but is good practice.
+EXPOSE 10000
 
-# Set environment variables
-ENV FLASK_APP=app.py
-ENV FLASK_ENV=production
-
-# Expose port
-EXPOSE 5001
-
-# Run the application with Gunicorn
+# The command to start the Gunicorn server
 CMD ["gunicorn", "--config", "gunicorn_config.py", "wsgi:app"] 
