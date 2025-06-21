@@ -205,6 +205,14 @@ def retrain_model():
     
     return new_model_path
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        'status': 'healthy',
+        'message': 'Deepfake detection service is running',
+        'timestamp': datetime.now().isoformat()
+    })
+
 @app.route('/upload', methods=['POST'])
 def upload_video():
     if 'video' not in request.files:
