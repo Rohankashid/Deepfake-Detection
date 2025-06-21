@@ -285,6 +285,7 @@ export default function Home() {
   const confidenceArcRef = useRef<SVGCircleElement>(null);
   const confidenceTextRef = useRef<SVGTextElement>(null);
   const [currentSection, setCurrentSection] = useState<PageSection>('home');
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
   const CIRCLE_LEN = 2 * Math.PI * 52; // SVG circle length for gauge
@@ -676,6 +677,14 @@ export default function Home() {
 
   }, [theme]); // Depend on theme state so effect runs when theme changes
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleThemeToggle = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
@@ -777,10 +786,8 @@ export default function Home() {
   return (
     <>
       {/* <Navbar /> */}
-      <div className={`min-h-screen ${theme === 'dark' ? 'bg-gradient-to-b from-gray-900 via-gray-800 to-black' : 'bg-gradient-to-b from-gray-50 via-gray-100 to-white'} overflow-x-hidden will-change-transform`}>
-      
       <ScrollProgress />
-      <header className={`w-full fixed top-0 z-50 backdrop-blur-md ${theme === 'dark' ? 'bg-black/40 border-white/10' : 'bg-white/40 border-gray-200'} border-b sticky top-0 shadow-lg`}>
+      <header className={`w-full fixed top-0 z-50 transition-all duration-300 ${isScrolled ? `backdrop-blur-md ${theme === 'dark' ? 'bg-black/40 border-white/10' : 'bg-white/40 border-gray-200'} border-b shadow-lg` : 'border-b border-transparent'}`}>
         {/* Theme Toggle Button (Absolute Positioned to Header) */}
         <Button
           id="themeToggle"
@@ -885,150 +892,9 @@ export default function Home() {
           </nav>
         </nav>
       </header>
-
-      {/* Mobile Navigation */}
-      <nav className="md:hidden space-y-2">
-        <button
-          onClick={() => setCurrentSection('home')}
-          className={`relative w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
-            currentSection === 'home'
-              ? 'bg-gray-800 text-white shadow-lg'
-              : theme === 'dark'
-                ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                : 'text-black hover:text-white hover:bg-gray-700/50'
-          }`}
-        >
-          <span className="relative z-10">Home</span>
-          {currentSection === 'home' && (
-            <motion.div
-              layoutId="activeNavMobile"
-              className="absolute inset-0 bg-gray-800"
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-            />
-          )}
-        </button>
-        <button
-          onClick={() => setCurrentSection('history')}
-          className={`relative w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
-            currentSection === 'history'
-              ? 'bg-gray-800 text-white shadow-lg'
-              : theme === 'dark'
-                ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                : 'text-black hover:text-white hover:bg-gray-700/50'
-          }`}
-        >
-          <span className="relative z-10">History</span>
-          {currentSection === 'history' && (
-            <motion.div
-              layoutId="activeNavMobile"
-              className="absolute inset-0 bg-gray-800"
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-            />
-          )}
-        </button>
-        <button
-          onClick={() => setCurrentSection('dashboard')}
-          className={`relative w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
-            currentSection === 'dashboard'
-              ? 'bg-gray-800 text-white shadow-lg'
-              : theme === 'dark'
-                ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                : 'text-black hover:text-white hover:bg-gray-700/50'
-          }`}
-        >
-          <span className="relative z-10">Dashboard</span>
-          {currentSection === 'dashboard' && (
-            <motion.div
-              layoutId="activeNavMobile"
-              className="absolute inset-0 bg-gray-800"
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-            />
-          )}
-        </button>
-        <button
-          onClick={() => setCurrentSection('profile')}
-          className={`relative w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden group ${
-            currentSection === 'profile'
-              ? 'bg-gray-800 text-white shadow-lg'
-              : theme === 'dark'
-                ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                : 'text-black hover:text-white hover:bg-gray-700/50'
-          }`}
-        >
-          <span className="relative z-10">Profile</span>
-          {currentSection === 'profile' && (
-            <motion.div
-              layoutId="activeNavMobile"
-              className="absolute inset-0 bg-gray-800"
-              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-            />
-          )}
-        </button>
-      </nav>
-
-      {/* Mobile Menu Overlay and Panel */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-40"
-            onClick={() => setIsMobileMenuOpen(false)}
-          ></motion.div>
-        )}
-      </AnimatePresence>
-
-       <AnimatePresence>
-        {isMobileMenuOpen && (
-           <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className={`fixed top-0 right-0 w-64 h-full ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg z-50 p-6 flex flex-col`}
-           >
-             <div className="flex justify-end mb-6">
-               <Button
-                 variant="outline"
-                 size="icon"
-                 aria-label="Close menu"
-                 onClick={() => setIsMobileMenuOpen(false)}
-                 className={`rounded-md text-xl ${theme === 'dark' ? 'text-white/80 hover:text-white border-white/20' : 'text-gray-600 hover:text-gray-900 border-gray-300'}`}
-               >
-                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-               </Button>
-             </div>
-             <nav className="flex flex-col space-y-4">
-                {['home', 'history', 'dashboard', 'profile'].map(section => (
-                  <button
-                    key={section}
-                    onClick={() => {
-                      setCurrentSection(section as PageSection);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`w-full relative px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 overflow-hidden group
-                      ${currentSection === section
-                        ? 'bg-gray-800 text-white shadow'
-                        : 'bg-transparent text-gray-200 hover:text-white hover:bg-gray-700/60'}
-                    `}
-                    style={{ background: 'none' }} // <-- This will override any inline blue background
-                  >
-                    <span className="relative z-10">{section.charAt(0).toUpperCase() + section.slice(1)}</span>
-                    {currentSection === section && (
-                      <motion.div
-                        layoutId="activeNavMobile"
-                        className="absolute inset-0 bg-gray-800"
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                      />
-                    )}
-                  </button>
-                ))}
-             </nav>
-           </motion.div>
-        )}
-      </AnimatePresence>
-
+      <div className={`min-h-screen ${theme === 'dark' ? 'bg-gradient-to-b from-gray-900 via-gray-800 to-black' : 'bg-gradient-to-b from-gray-50 via-gray-100 to-white'} overflow-x-hidden will-change-transform`}>
+      
+      
       <AnimatePresence mode="wait">
         {currentSection === 'home' && (
           <motion.div

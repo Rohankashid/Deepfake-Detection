@@ -26,7 +26,8 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <NavigationProvider>
-              <main className="pt-16">
+              {/* <MainNavbar/> */}
+              <main>
                 {children}
               </main>
             </NavigationProvider>

@@ -19,7 +19,7 @@ ALLOWED_EXTENSIONS = {'mp4', 'mov', 'avi', 'mkv'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['TRAINING_FOLDER'] = TRAINING_FOLDER
 
-# Ensure the upload and training directories exist
+# Ensure the upload and training directories existits
 for folder in [UPLOAD_FOLDER, TRAINING_FOLDER]:
     if not os.path.exists(folder):
         os.makedirs(folder)
