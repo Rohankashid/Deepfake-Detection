@@ -327,7 +327,8 @@ export default function Home() {
     try {
       const response = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://localhost:5001/upload', true);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        xhr.open('POST', `${apiUrl}/upload`, true);
 
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable) {
@@ -1121,7 +1122,7 @@ export default function Home() {
                               <Button
                                 type="submit"
                                 disabled={isUploading || isAnalyzing || !videoFile}
-                                className="px-12 py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white hover:from-purple-600 hover:via-pink-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 rounded-xl shadow-lg hover:shadow-xl"
+                                className="px-12 py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white hover:from-purple-600 hover:via-pink-600 hover:to-red-600 transition-all duration-300 rounded-xl shadow-lg hover:shadow-xl"
                               >
                                 {isUploading ? 'Uploading...' : isAnalyzing ? 'Analyzing...' : 'Analyze Now →'}
                               </Button>

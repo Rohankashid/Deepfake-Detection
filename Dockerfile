@@ -1,52 +1,29 @@
-# Use a more recent Python base image
-FROM python:3.9-slim-bullseye
+# Use a specific linux/amd64 base image to ensure architecture compatibility
+FROM --platform=linux/amd64 continuumio/miniconda3
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Create a Conda environment and install key dependencies from conda-forge
+# This includes python, dlib, and the build tools needed by other packages
+RUN conda create -n deepfake-env python=3.9 -y
+RUN echo "conda activate deepfake-env" >> ~/.bashrc
+SHELL ["/bin/bash", "-l", "-c"]
+RUN conda install -n deepfake-env -c conda-forge dlib cmake pkg-config -y
 
-# Install system dependencies including a newer CMake version
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    cmake \
-    pkg-config \
-    libx11-dev \
-    libatlas-base-dev \
-    libgtk-3-dev \
-    libboost-python-dev \
-    libopencv-dev \
-    python3-dev \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
-
-# Upgrade CMake to a newer version for dlib compatibility
-RUN wget -O cmake.sh https://github.com/Kitware/CMake/releases/download/v3.25.0/cmake-3.25.0-linux-x86_64.sh \
-    && sh cmake.sh --skip-license --prefix=/usr/local \
-    && rm cmake.sh
-
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Upgrade pip
-RUN pip install --no-cache-dir --upgrade pip
-
-# Install dlib with specific CMake flags to bypass version conflicts
-RUN CMAKE_POLICY_VERSION_MINIMUM=3.5 pip install --no-cache-dir dlib==19.24.2
-
-# Copy requirements file and install the rest of the dependencies
+# Install the rest of the packages from requirements.txt using pip
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN conda run -n deepfake-env pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
 COPY . .
 
-# Create a non-root user
-RUN useradd --create-home --shell /bin/bash app \
-    && chown -R app:app /app
+# Create and switch to a non-root user
+RUN useradd --create-home app && \
+    chown -R app:app /app
 USER app
 
-# Expose port
 EXPOSE 8000
 
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "1", "--timeout", "120", "app:app"] 
+# The CMD needs to run within the conda environment
+CMD conda run -n deepfake-env gunicorn --bind 0.0.0.0:8000 --workers 1 --timeout 120 app:app 
