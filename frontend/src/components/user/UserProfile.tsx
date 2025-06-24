@@ -82,7 +82,7 @@ export const UserProfile = () => {
             <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text mb-2">
               {user?.email || 'Guest User'}
             </h2>
-            <p className={`${theme === 'dark' ? 'text-white' : 'text-black'} text-sm sm:text-base`}>
+            <p className={`${theme === 'dark' ? 'text-white' : 'text-gray-600'} text-sm sm:text-base`}>
               {isLoggedIn ? 'Your AI-powered avatar companion' : 'Proceeding without login'}
             </p>
           </div>
@@ -183,7 +183,7 @@ export const UserProfile = () => {
                   <h4 className={`font-medium mb-1 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
                     Email Notifications
                   </h4>
-                  <p className={`text-sm ${theme === 'dark' ? 'text-white/60' : 'text-black/60'}`}>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white/60' : 'text-gray-600'}`}>
                     Receive updates about your analyses
                   </p>
                 </div>
@@ -207,7 +207,7 @@ export const UserProfile = () => {
                   <h4 className={`font-medium mb-1 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
                     Data Sharing
                   </h4>
-                  <p className={`text-sm ${theme === 'dark' ? 'text-white/60' : 'text-black/60'}`}>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white/60' : 'text-gray-600'}`}>
                     Help improve our detection model
                   </p>
                 </div>

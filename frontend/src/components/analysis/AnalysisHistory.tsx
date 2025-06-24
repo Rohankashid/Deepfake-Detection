@@ -47,7 +47,7 @@ export const AnalysisHistory = () => {
           const framePath = result.frames?.[0];
           return {
             ...result,
-            thumbnail: framePath || '/static/frames/default.jpg',
+            thumbnail: framePath || '/static/frames/default.png',
             date: new Date(timestamp).toLocaleDateString('en-US', {
               year: 'numeric',
               month: '2-digit',
@@ -332,7 +332,7 @@ export const AnalysisHistory = () => {
                   className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = '/static/frames/default.jpg';
+                    target.src = '/static/frames/default.png';
                   }}
                   />
                 </div>

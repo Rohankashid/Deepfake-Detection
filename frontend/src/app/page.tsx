@@ -327,7 +327,7 @@ export default function Home() {
     try {
       const response = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
         xhr.open('POST', `${apiUrl}/upload`, true);
 
         xhr.upload.onprogress = (e) => {
@@ -449,7 +449,7 @@ export default function Home() {
         try {
           await new Promise((resolve, reject) => {
             const trainingXhr = new XMLHttpRequest();
-            trainingXhr.open('POST', 'http://localhost:5001/store_for_training', true);
+            trainingXhr.open('POST', 'http://192.168.1.20:5001/store_for_training', true);
             trainingXhr.onload = () => {
               if (trainingXhr.status === 200) {
                 resolve(trainingXhr.responseText);
@@ -1019,10 +1019,17 @@ export default function Home() {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
-                          className={`loader-container absolute inset-0 ${theme === 'dark' ? 'bg-black/80' : 'bg-white/80'} backdrop-blur-sm flex flex-col items-center justify-center rounded-3xl z-10 p-6`}
+                          className={`loader-container absolute inset-0 bg-transparent backdrop-blur-sm flex flex-col items-center justify-center rounded-3xl z-10 p-6`}
                         >
-                          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                          <p className={`${theme === 'dark' ? 'text-white' : 'text-gray-900'} text-xl font-semibold mb-4`}>{isUploading ? 'Uploading...' : 'Analyzing Video...'}</p>
+                          {/* Show upload percentage instead of spinning loader */}
+                          {isUploading && (
+                            <p className={`${theme === 'dark' ? 'text-white' : 'text-gray-900'} text-lg font-semibold mb-2`}>
+                              {uploadProgress}%
+                            </p>
+                          )}
+                          <p className={`${theme === 'dark' ? 'text-white' : 'text-gray-900'} text-xl font-semibold mb-4`}>
+                            {isUploading ? 'Uploading...' : 'Analyzing Video...'}
+                          </p>
                           {isUploading && (
                             <div className={`w-full max-w-xs h-2 ${theme === 'dark' ? 'bg-white/10' : 'bg-gray-200'} rounded-full overflow-hidden`}>
                               <motion.div
